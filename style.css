@@ -1,0 +1,55 @@
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  background: #f4f4f4;
+}
+
+.container {
+  display: flex;
+  height: 100vh;
+}
+
+.left-panel, .right-panel {
+  flex: 1;
+  padding: 20px;
+  overflow-y: auto;
+}
+
+.left-panel {
+  background: #ffffff;
+  border-right: 2px solid #ccc;
+}
+
+.right-panel {
+  background: #f9f9f9;
+}
+
+label {
+  display: block;
+  margin-top: 10px;
+}
+
+input, select, button {
+  width: 100%;
+  margin-top: 5px;
+  padding: 5px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+
+table, th, td {
+  border: 1px solid #ccc;
+}
+
+th, td {
+  padding: 5px;
+  text-align: center;
+}
+
+#resultPanel {
+  margin-top: 20px;
+}

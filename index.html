@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>TdP Risk Calculator</title>
+  <link rel="stylesheet" href="style.css"/>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <div class="container">
+    <!-- LEFT PANEL -->
+    <div class="left-panel">
+      <h1>TdP Risk Calculator</h1>
+      <p>This tool estimates Torsades de Pointes (TdP) risk based on in vitro field potential data.</p>
+
+      <h3>Parameter Definitions</h3>
+      <ul>
+        <li><strong>Cmax (nM):</strong> Maximum plasma concentration</li>
+        <li><strong>Arrhythmia Type:</strong> no arrhythmia, type A, other</li>
+        <li><strong>Cell Type:</strong> numeric indicator of hiPSC-CM source</li>
+        <li><strong>Assay Time:</strong> 30 min or 24 hours</li>
+        <li><strong>FPDc Pairs:</strong> Concentration-FPDc pairs for Hill fitting</li>
+      </ul>
+
+      <h3>Enter Input</h3>
+      <form id="inputForm">
+        <label for="cmax">Cmax (nM):</label>
+        <input type="number" id="cmax" step="any" required />
+
+        <label for="arrType">Arrhythmia Type:</label>
+        <select id="arrType">
+          <option value="no arrhythmia">no arrhythmia</option>
+          <option value="type A arrhythmia">type A arrhythmia</option>
+          <option value="other arrhythmia">other arrhythmia</option>
+        </select>
+
+        <label for="cellType">Cell Type (numeric):</label>
+        <input type="number" id="cellType" step="1" value="1"/>
+
+        <label for="assayTime">Assay Time:</label>
+        <select id="assayTime">
+          <option value="30 min">30 min</option>
+          <option value="24 hours">24 hours</option>
+        </select>
+
+        <label for="dataTable">Concentration–FPDc Pairs</label>
+        <table id="dataTable">
+          <thead>
+            <tr><th>Conc (µM)</th><th>FPDc (ms)</th></tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+        <button type="button" onclick="addRow()">Add Row</button>
+        <button type="submit">Calculate</button>
+      </form>
+    </div>
+
+    <!-- RIGHT PANEL -->
+    <div class="right-panel">
+      <div id="resultPanel">
+        <h2>Results</h2>
+        <div id="modelOutput"></div>
+        <canvas id="barChart" width="400" height="300"></canvas>
+        <canvas id="hillPlot" width="400" height="300"></canvas>
+      </div>
+    </div>
+  </div>
+  <script src="script.js"></script>
+</body>
+</html>
