@@ -17,9 +17,10 @@
 
     <section class="inputs">
       <form id="riskForm">
-        <div class="field-group">
-          <label for="cmax">Cmax (nM)</label>
+        <div class="field-group" style="display: flex; align-items: center; gap: 10px;">
+          <label for="cmax" id="cmaxLabel">Cmax (nM)</label>
           <input type="number" step="any" id="cmax" placeholder="e.g. 150.5" required>
+          <button type="button" id="switchCmaxUnit">Switch Unit</button>
         </div>
         <div class="field-group">
           <label for="arrhythmia">Arrhythmia Type</label>
@@ -45,13 +46,13 @@
           <label>Concentration – FPDc Pairs</label>
           <table>
             <thead>
-              <tr><th>Conc (µM)</th><th>FPDc (ms)</th></tr>
+              <tr><th>Conc (µM)</th><th>FPDc (ms)</th><th></th></tr>
             </thead>
             <tbody id="dataBody">
-              <tr>
-                <td><input type="number" step="any" required></td>
-                <td><input type="number" step="any" required></td>
-              </tr>
+              <tr><td><input type="number" step="any" required name="concentration[]"></td><td><input type="number" step="any" required name="fpdc[]"></td><td><button type="button" onclick="removeRow(this)">−</button></td></tr>
+              <tr><td><input type="number" step="any" required name="concentration[]"></td><td><input type="number" step="any" required name="fpdc[]"></td><td><button type="button" onclick="removeRow(this)">−</button></td></tr>
+              <tr><td><input type="number" step="any" required name="concentration[]"></td><td><input type="number" step="any" required name="fpdc[]"></td><td><button type="button" onclick="removeRow(this)">−</button></td></tr>
+              <tr><td><input type="number" step="any" required name="concentration[]"></td><td><input type="number" step="any" required name="fpdc[]"></td><td><button type="button" onclick="removeRow(this)">−</button></td></tr>
             </tbody>
           </table>
           <button type="button" onclick="addRow()" class="small-btn">Add row</button>
