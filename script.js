@@ -1,3 +1,29 @@
+
+let cmaxIsNM = true;
+document.getElementById("switchCmaxUnit").addEventListener("click", function () {
+  const cmaxInput = document.getElementById("cmax");
+  const cmaxLabel = document.getElementById("cmaxLabel");
+  let value = parseFloat(cmaxInput.value);
+  if (isNaN(value)) return;
+
+  if (cmaxIsNM) {
+    value = value / 1000;
+    cmaxLabel.innerText = "Cmax (µM)";
+  } else {
+    value = value * 1000;
+    cmaxLabel.innerText = "Cmax (nM)";
+  }
+
+  cmaxInput.value = value.toFixed(4);
+  cmaxIsNM = !cmaxIsNM;
+});
+
+function removeRow(btn) {
+  const row = btn.closest("tr");
+  if (row) row.remove();
+}
+
+
 let hillChart, barChart;
 
 function addRow() {
@@ -14,6 +40,7 @@ document.getElementById("riskForm").addEventListener("submit", function (e) {
   e.preventDefault();
 
   const Cmax_nM = parseFloat(document.getElementById("cmax").value);
+  const Cmax = cmaxIsNM ? Cmax_nM / 1000 : Cmax_nM;
   const Cmax = Cmax_nM / 1000;
   const arrhythmia = parseInt(document.getElementById("arrhythmia").value);
   const cellType = parseFloat(document.getElementById("celltype").value);
