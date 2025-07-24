@@ -1,55 +1,27 @@
-body {
-  font-family: Arial, sans-serif;
-  margin: 0;
-  background: #f4f4f4;
-}
-
-.container {
+.main-container {
   display: flex;
-  height: 100vh;
-}
-
-.left-panel, .right-panel {
-  flex: 1;
-  padding: 20px;
-  overflow-y: auto;
-}
-
-.left-panel {
-  background: #ffffff;
-  border-right: 2px solid #ccc;
-}
-
-.right-panel {
-  background: #f9f9f9;
-}
-
-label {
-  display: block;
-  margin-top: 10px;
-}
-
-input, select, button {
-  width: 100%;
-  margin-top: 5px;
-  padding: 5px;
-}
-
-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 10px;
-}
-
-table, th, td {
-  border: 1px solid #ccc;
-}
-
-th, td {
-  padding: 5px;
-  text-align: center;
-}
-
-#resultPanel {
+  flex-direction: row;
+  justify-content: space-between;
+  gap: 30px;
   margin-top: 20px;
+  flex-wrap: wrap;
+}
+
+.inputs, .outputs {
+  flex: 1 1 48%;
+  background: #fff;
+  padding: 20px 30px;
+  border-radius: 12px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  max-width: 100%;
+}
+
+.outputs {
+  overflow-x: auto;
+}
+
+@media screen and (max-width: 768px) {
+  .main-container {
+    flex-direction: column;
+  }
 }
