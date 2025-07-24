@@ -1,19 +1,14 @@
+
 let isModel1 = false;
 let showInNM = false;
 let qtcLogM = null;
 let cmaxIsNM = true;
 
 document.addEventListener("DOMContentLoaded", () => {
-  const form = document.getElementById("riskForm");
-  if (form) {
-    form.addEventListener("submit", function (e) {
-      e.preventDefault();
-      console.log("Form submitted. Calling processInput...");
-      processInput();
-    });
-  } else {
-    console.error("Form element not found.");
-  }
+  document.getElementById("riskForm").addEventListener("submit", function (e) {
+    e.preventDefault();
+    processInput();
+  });
 });
 
 function toggleQTUnit() {
@@ -38,12 +33,8 @@ function switchModel() {
 function drawRiskChart(model1) {
   const ctx = document.getElementById("riskBarChart").getContext("2d");
   if (window.riskChart) window.riskChart.destroy();
-
   const data = model1 ? [0.45, 0.55, 0] : [0.3, 0.4, 0.3];
-  const labels = model1
-    ? ["High or Intermediate Risk", "Low Risk", ""]
-    : ["High Risk", "Intermediate Risk", "Low Risk"];
-
+  const labels = model1 ? ["High or Intermediate Risk", "Low Risk", ""] : ["High Risk", "Intermediate Risk", "Low Risk"];
   window.riskChart = new Chart(ctx, {
     type: 'bar',
     data: {
@@ -71,7 +62,6 @@ function drawRiskChart(model1) {
 function updateQTcDisplay(logValue) {
   qtcLogM = logValue;
   showInNM = false;
-
   document.getElementById("qtcValueLog").innerText = logValue.toFixed(4);
   const value = Math.pow(10, logValue) * 1e9;
   document.getElementById("qtcValue").innerText = `${value.toFixed(8)} nM`;
@@ -84,7 +74,6 @@ function drawHillPlot(xVals, yVals, cmax, fittedFunc) {
 
   const logXVals = xVals.map(x => Math.log10(x));
   const logCmax = Math.log10(cmax);
-
   const fitX = [], fitY = [];
   const minX = Math.min(...xVals) * 0.5;
   const maxX = Math.max(...xVals) * 1.5;
@@ -92,7 +81,6 @@ function drawHillPlot(xVals, yVals, cmax, fittedFunc) {
   for (let x = minX; x <= maxX; x *= 1.05) {
     const fx = fittedFunc(x);
     if (isNaN(fx)) {
-      console.error("Hill fit failed at x =", x, "with function result =", fx);
       alert("Error: Hill fit did not converge. Please check input data.");
       return;
     }
@@ -141,43 +129,23 @@ function drawHillPlot(xVals, yVals, cmax, fittedFunc) {
         legend: { display: false }
       },
       scales: {
-        x: {
-          type: 'linear',
-          title: {
-            display: true,
-            text: 'log₁₀[Concentration (µM)]'
-          }
-        },
-        y: {
-          title: {
-            display: true,
-            text: 'FPDc (ms)'
-          }
-        }
+        x: { type: 'linear', title: { display: true, text: 'log₁₀[Concentration (µM)]' } },
+        y: { title: { display: true, text: 'FPDc (ms)' } }
       }
     }
   });
 }
 
 function processInput() {
-  console.log("processInput called");
-
   let cmax = parseFloat(document.getElementById("cmax").value);
-  console.log("Raw Cmax:", cmax, cmaxIsNM ? "(nM)" : "(µM)");
-
   if (isNaN(cmax)) {
     alert("Please enter a valid Cmax value.");
     return;
   }
-
-  if (!cmaxIsNM) {
-    cmax *= 1000;
-    console.log("Converted Cmax to nM:", cmax);
-  }
+  if (!cmaxIsNM) cmax *= 1000;
 
   const tableRows = document.querySelectorAll("#dataBody tr");
   const conc = [], fpd = [];
-
   for (let row of tableRows) {
     const inputs = row.querySelectorAll("input");
     const x = parseFloat(inputs[0].value);
@@ -187,10 +155,6 @@ function processInput() {
       fpd.push(y);
     }
   }
-
-  console.log("Concentration values:", conc);
-  console.log("FPDc values:", fpd);
-
   if (conc.length < 2 || fpd.length < 2) {
     alert("Please enter at least two valid data pairs.");
     return;
@@ -199,18 +163,12 @@ function processInput() {
   const Emax = Math.max(...fpd);
   const EC50 = conc[Math.floor(conc.length / 2)];
   const HillSlope = 1.2;
-
-  console.log("Emax:", Emax, "EC50:", EC50, "HillSlope:", HillSlope);
-
   const fittedFunc = (x) => {
     const denom = Math.pow(EC50, HillSlope) + Math.pow(x, HillSlope);
     return denom === 0 ? NaN : Emax * Math.pow(x, HillSlope) / denom;
   };
 
-  console.log("Drawing plots...");
   drawHillPlot(conc, fpd, cmax, fittedFunc);
-
-  const qtcLogM = -8.2;
-  updateQTcDisplay(qtcLogM);
+  updateQTcDisplay(-8.2);
   drawRiskChart(isModel1);
 }

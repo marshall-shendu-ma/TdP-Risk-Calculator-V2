@@ -15,7 +15,6 @@
     </header>
 
     <div class="main-container">
-      <!-- Left Column: Inputs -->
       <section class="inputs">
         <form id="riskForm">
           <div class="field-group">
@@ -63,7 +62,6 @@
         </form>
       </section>
 
-      <!-- Right Column: Outputs -->
       <section class="outputs">
         <div class="results-section">
           <h2>Predicted QT Prolongation Based on Kilfoil Model (Kilfoil et al, 2021)</h2>
@@ -85,7 +83,6 @@
     </div>
   </div>
 
-  <!-- Add default data -->
   <script>
     let cmaxIsNM = true;
     const defaultData = [
@@ -97,11 +94,11 @@
       const tbody = document.getElementById("dataBody");
       defaultData.forEach(pair => {
         const row = document.createElement("tr");
-        row.innerHTML = `
-          <td><input type="number" step="any" value="${pair[0]}" required></td>
-          <td><input type="number" step="any" value="${pair[1]}" required></td>
+        row.innerHTML = \`
+          <td><input type="number" step="any" value="\${pair[0]}" required></td>
+          <td><input type="number" step="any" value="\${pair[1]}" required></td>
           <td><button type="button" onclick="removeRow(this)">−</button></td>
-        `;
+        \`;
         tbody.appendChild(row);
       });
     });
@@ -109,11 +106,11 @@
     function addRow() {
       const tbody = document.getElementById("dataBody");
       const row = document.createElement("tr");
-      row.innerHTML = `
+      row.innerHTML = \`
         <td><input type="number" step="any" required></td>
         <td><input type="number" step="any" required></td>
         <td><button type="button" onclick="removeRow(this)">−</button></td>
-      `;
+      \`;
       tbody.appendChild(row);
     }
 

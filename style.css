@@ -6,7 +6,6 @@
   margin-top: 20px;
   flex-wrap: wrap;
 }
-
 .inputs, .outputs {
   flex: 1 1 48%;
   background: #fff;
@@ -15,11 +14,9 @@
   box-shadow: 0 0 10px rgba(0,0,0,0.1);
   max-width: 100%;
 }
-
 .outputs {
   overflow-x: auto;
 }
-
 @media screen and (max-width: 768px) {
   .main-container {
     flex-direction: column;
