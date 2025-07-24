@@ -3,69 +3,147 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>TdP Risk Calculator</title>
+  <title>TdP & QT Risk Calculator</title>
   <link rel="stylesheet" href="style.css"/>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 </head>
 <body>
-  <div class="container">
-    <!-- LEFT PANEL -->
-    <div class="left-panel">
-      <h1>TdP Risk Calculator</h1>
-      <p>This tool estimates Torsades de Pointes (TdP) risk based on in vitro field potential data.</p>
+  <div class="app">
+    <header>
+      <h1>TdP & QT Risk Assessment</h1>
+      <p>A web-based tool to estimate torsades de pointes risk and QT prolongation thresholds.</p>
+    </header>
 
-      <h3>Parameter Definitions</h3>
-      <ul>
-        <li><strong>Cmax (nM):</strong> Maximum plasma concentration</li>
-        <li><strong>Arrhythmia Type:</strong> no arrhythmia, type A, other</li>
-        <li><strong>Cell Type:</strong> numeric indicator of hiPSC-CM source</li>
-        <li><strong>Assay Time:</strong> 30 min or 24 hours</li>
-        <li><strong>FPDc Pairs:</strong> Concentration-FPDc pairs for Hill fitting</li>
-      </ul>
+    <div class="main-container">
+      <!-- Left Column: Inputs -->
+      <section class="inputs">
+        <form id="riskForm">
+          <div class="field-group">
+            <label for="cmax">Cmax <span id="cmaxUnit">(nM)</span></label>
+            <div style="display: flex; gap: 10px;">
+              <input type="number" step="any" id="cmax" value="8.1" required>
+              <button type="button" onclick="toggleCmaxUnit()" style="padding: 5px 10px;">Switch to µM</button>
+            </div>
+          </div>
 
-      <h3>Enter Input</h3>
-      <form id="inputForm">
-        <label for="cmax">Cmax (nM):</label>
-        <input type="number" id="cmax" step="any" required />
+          <div class="field-group">
+            <label for="arrhythmia">Arrhythmia Type</label>
+            <select id="arrhythmia">
+              <option value="0">No arrhythmia</option>
+              <option value="1" selected>Type A arrhythmia</option>
+              <option value="2">Other arrhythmia</option>
+            </select>
+          </div>
 
-        <label for="arrType">Arrhythmia Type:</label>
-        <select id="arrType">
-          <option value="no arrhythmia">no arrhythmia</option>
-          <option value="type A arrhythmia">type A arrhythmia</option>
-          <option value="other arrhythmia">other arrhythmia</option>
-        </select>
+          <div class="field-group">
+            <label for="celltype">Cell Type (numeric)</label>
+            <input type="number" step="any" id="celltype" value="0" required>
+          </div>
 
-        <label for="cellType">Cell Type (numeric):</label>
-        <input type="number" id="cellType" step="1" value="1"/>
+          <div class="field-group">
+            <label for="assay">Assay Incubation Time</label>
+            <select id="assay">
+              <option value="30" selected>30 min</option>
+              <option value="24">24 hours</option>
+            </select>
+          </div>
 
-        <label for="assayTime">Assay Time:</label>
-        <select id="assayTime">
-          <option value="30 min">30 min</option>
-          <option value="24 hours">24 hours</option>
-        </select>
+          <div class="field-group wide">
+            <label>Concentration – FPDc Pairs</label>
+            <table>
+              <thead>
+                <tr><th>Conc (nM)</th><th>FPDc (ms)</th><th></th></tr>
+              </thead>
+              <tbody id="dataBody"></tbody>
+            </table>
+            <button type="button" onclick="addRow()" class="small-btn">Add row</button>
+          </div>
 
-        <label for="dataTable">Concentration–FPDc Pairs</label>
-        <table id="dataTable">
-          <thead>
-            <tr><th>Conc (µM)</th><th>FPDc (ms)</th></tr>
-          </thead>
-          <tbody></tbody>
-        </table>
-        <button type="button" onclick="addRow()">Add Row</button>
-        <button type="submit">Calculate</button>
-      </form>
-    </div>
+          <button type="submit" class="submit-btn">Calculate</button>
+        </form>
+      </section>
 
-    <!-- RIGHT PANEL -->
-    <div class="right-panel">
-      <div id="resultPanel">
-        <h2>Results</h2>
-        <div id="modelOutput"></div>
-        <canvas id="barChart" width="400" height="300"></canvas>
-        <canvas id="hillPlot" width="400" height="300"></canvas>
-      </div>
+      <!-- Right Column: Outputs -->
+      <section class="outputs">
+        <div class="results-section">
+          <h2>Predicted QT Prolongation Based on Kilfoil Model (Kilfoil et al, 2021)</h2>
+          <p><strong>Estimated QTc (log M):</strong> <span id="qtcValueLog"></span></p>
+          <p id="estimatedQTc"><strong>Estimated QTc:</strong> <span id="qtcValue"></span> <button type="button" onclick="toggleQTUnit()">Switch to µM</button></p>
+        </div>
+
+        <div class="chart-block">
+          <h2 id="riskChartTitle">Model 2 TdP Risk <button type="button" onclick="switchModel()">Switch TdP Risk Calculating Model</button></h2>
+          <div id="modelRiskDescription">Ordinal regression</div>
+          <canvas id="riskBarChart"></canvas>
+        </div>
+
+        <div class="chart-block">
+          <h2>Hill Fit Curve</h2>
+          <canvas id="hillPlot"></canvas>
+        </div>
+      </section>
     </div>
   </div>
+
+  <!-- Add default data -->
+  <script>
+    let cmaxIsNM = true;
+    const defaultData = [
+      [0, 0], [0.3, -9.8965], [1, -6.0425], [3, -6.2026],
+      [10, 0.1193], [30, 26.6547], [100, 56.3602]
+    ];
+
+    document.addEventListener("DOMContentLoaded", () => {
+      const tbody = document.getElementById("dataBody");
+      defaultData.forEach(pair => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td><input type="number" step="any" value="${pair[0]}" required></td>
+          <td><input type="number" step="any" value="${pair[1]}" required></td>
+          <td><button type="button" onclick="removeRow(this)">−</button></td>
+        `;
+        tbody.appendChild(row);
+      });
+    });
+
+    function addRow() {
+      const tbody = document.getElementById("dataBody");
+      const row = document.createElement("tr");
+      row.innerHTML = `
+        <td><input type="number" step="any" required></td>
+        <td><input type="number" step="any" required></td>
+        <td><button type="button" onclick="removeRow(this)">−</button></td>
+      `;
+      tbody.appendChild(row);
+    }
+
+    function removeRow(button) {
+      const row = button.closest("tr");
+      if (row && row.parentNode) row.parentNode.removeChild(row);
+    }
+
+    function toggleCmaxUnit() {
+      const cmaxInput = document.getElementById("cmax");
+      const unitLabel = document.getElementById("cmaxUnit");
+      const button = event.target;
+      let value = parseFloat(cmaxInput.value);
+
+      if (!isNaN(value)) {
+        if (cmaxIsNM) {
+          value = value / 1000;
+          unitLabel.textContent = "(µM)";
+          button.textContent = "Switch to nM";
+        } else {
+          value = value * 1000;
+          unitLabel.textContent = "(nM)";
+          button.textContent = "Switch to µM";
+        }
+        cmaxInput.value = value.toFixed(4);
+        cmaxIsNM = !cmaxIsNM;
+      }
+    }
+  </script>
+
   <script src="script.js"></script>
 </body>
 </html>
