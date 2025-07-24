@@ -1,174 +1,168 @@
+let hillChart, barChart;
 
-let isModel1 = false;
-let showInNM = false;
-let qtcLogM = null;
-let cmaxIsNM = true;
-
-document.addEventListener("DOMContentLoaded", () => {
-  document.getElementById("riskForm").addEventListener("submit", function (e) {
-    e.preventDefault();
-    processInput();
-  });
-});
-
-function toggleQTUnit() {
-  if (qtcLogM === null) return;
-  const value = Math.pow(10, qtcLogM);
-  const converted = showInNM ? value * 1e6 : value * 1e9;
-  const unit = showInNM ? "µM" : "nM";
-  document.getElementById("qtcValue").innerText = `${converted.toFixed(8)} ${unit}`;
-  document.querySelector("#estimatedQTc button").innerText = showInNM ? "Switch to nM" : "Switch to µM";
-  showInNM = !showInNM;
+function addRow() {
+  const tbody = document.getElementById("dataBody");
+  const newRow = document.createElement("tr");
+  newRow.innerHTML = `
+    <td><input type="number" step="any" required></td>
+    <td><input type="number" step="any" required></td>
+  `;
+  tbody.appendChild(newRow);
 }
 
-function switchModel() {
-  isModel1 = !isModel1;
-  const chartTitle = document.getElementById("riskChartTitle");
-  const description = document.getElementById("modelRiskDescription");
-  chartTitle.firstChild.textContent = isModel1 ? "Model 1 TdP Risk " : "Model 2 TdP Risk ";
-  description.textContent = isModel1 ? "Logistic regression" : "Ordinal regression";
-  drawRiskChart(isModel1);
-}
+document.getElementById("riskForm").addEventListener("submit", function (e) {
+  e.preventDefault();
 
-function drawRiskChart(model1) {
-  const ctx = document.getElementById("riskBarChart").getContext("2d");
-  if (window.riskChart) window.riskChart.destroy();
-  const data = model1 ? [0.45, 0.55, 0] : [0.3, 0.4, 0.3];
-  const labels = model1 ? ["High or Intermediate Risk", "Low Risk", ""] : ["High Risk", "Intermediate Risk", "Low Risk"];
-  window.riskChart = new Chart(ctx, {
-    type: 'bar',
-    data: {
-      labels: labels,
-      datasets: [{
-        data: data,
-        backgroundColor: ["#e74c3c", "#f39c12", "#2ecc71"],
-        borderWidth: 1
-      }]
-    },
-    options: {
-      plugins: {
-        legend: { display: false }
-      },
-      scales: {
-        y: {
-          beginAtZero: true,
-          max: 1
-        }
-      }
+  const Cmax_nM = parseFloat(document.getElementById("cmax").value);
+  const Cmax = Cmax_nM / 1000;
+  const arrhythmia = parseInt(document.getElementById("arrhythmia").value);
+  const cellType = parseFloat(document.getElementById("celltype").value);
+  const assayTime = document.getElementById("assay").value;
+
+  const rows = document.querySelectorAll("#dataBody tr");
+  const concentrations = [];
+  const fpdcs = [];
+  rows.forEach(row => {
+    const inputs = row.querySelectorAll("input");
+    const conc = parseFloat(inputs[0].value);
+    const fpd = parseFloat(inputs[1].value);
+    if (!isNaN(conc) && !isNaN(fpd)) {
+      concentrations.push(conc);
+      fpdcs.push(fpd);
     }
   });
-}
 
-function updateQTcDisplay(logValue) {
-  qtcLogM = logValue;
-  showInNM = false;
-  document.getElementById("qtcValueLog").innerText = logValue.toFixed(4);
-  const value = Math.pow(10, logValue) * 1e9;
-  document.getElementById("qtcValue").innerText = `${value.toFixed(8)} nM`;
-  document.querySelector("#estimatedQTc button").innerText = "Switch to µM";
-}
-
-function drawHillPlot(xVals, yVals, cmax, fittedFunc) {
-  const ctx = document.getElementById("hillPlot").getContext("2d");
-  if (window.hillChart) window.hillChart.destroy();
-
-  const logXVals = xVals.map(x => Math.log10(x));
-  const logCmax = Math.log10(cmax);
-  const fitX = [], fitY = [];
-  const minX = Math.min(...xVals) * 0.5;
-  const maxX = Math.max(...xVals) * 1.5;
-
-  for (let x = minX; x <= maxX; x *= 1.05) {
-    const fx = fittedFunc(x);
-    if (isNaN(fx)) {
-      alert("Error: Hill fit did not converge. Please check input data.");
-      return;
-    }
-    fitX.push(Math.log10(x));
-    fitY.push(fx);
+  if (concentrations.length < 3) {
+    alert("Please enter at least 3 data points.");
+    return;
   }
 
-  window.hillChart = new Chart(ctx, {
-    type: 'line',
+  const Bottom = Math.min(...fpdcs);
+  const Top = Math.max(...fpdcs);
+  const guess = { Bottom, Top, EC50: median(concentrations), Hill: 1 };
+
+  const hillFunc = (x, params) =>
+    params.Bottom + (params.Top - params.Bottom) / (1 + Math.pow(params.EC50 / x, params.Hill));
+
+  const loss = (params) => {
+    return fpdcs.reduce((sum, y, i) => {
+      const x = concentrations[i] || 0.01;
+      return sum + Math.pow(hillFunc(x, params) - y, 2);
+    }, 0);
+  };
+
+  let bestParams = { ...guess };
+  let minLoss = Infinity;
+  for (let h = 0.1; h <= 5; h += 0.1) {
+    for (let ec = 0.01; ec <= Math.max(...concentrations) * 10; ec += 0.1) {
+      const trial = { ...guess, EC50: ec, Hill: h };
+      const err = loss(trial);
+      if (err < minLoss) {
+        minLoss = err;
+        bestParams = trial;
+      }
+    }
+  }
+
+  const FPD_Cmax = hillFunc(Cmax || 0.01, bestParams);
+  const Predictor1 = arrhythmia;
+  const Predictor4 = Math.max(...fpdcs);
+  const Predictor7 = FPD_Cmax;
+
+  const Threshold_FPDc = assayTime === "30" ? Bottom * 1.103 : Bottom * 1.0794;
+  const QTcEqUsed = assayTime === "30"
+    ? "QTc = 0.92 * x - 0.35"
+    : "QTc = 0.93 * x - 0.17";
+  const EstQTcLogM = assayTime === "30"
+    ? (Threshold_FPDc + 0.35) / 0.92
+    : (Threshold_FPDc + 0.17) / 0.93;
+  const EstQTc_uM = Math.pow(10, EstQTcLogM);
+
+  const Threshold_C = bestParams.EC50 / Math.pow((bestParams.Top - bestParams.Bottom) / (Threshold_FPDc - bestParams.Bottom) - 1, 1 / bestParams.Hill);
+  const Threshold_C_logM = Math.log10(Threshold_C * 1e-6);
+
+  const P1_High = -0.1311 + Predictor1 + Predictor4 * 0.00687 + Predictor7 * 0.0232;
+  const Prob_Model1 = 1 / (1 + Math.exp(-P1_High));
+
+  const P2_a = -2.1102 + cellType * 0.2211 + 0.00105 * Predictor4 + 0.0338 * Predictor7 + Predictor1;
+  const Prob_Model2a = 1 / (1 + Math.exp(-P2_a));
+
+  const P2_b = -0.1211 + cellType * 0.2211 + 0.00105 * Predictor4 + 0.0338 * Predictor7 + Predictor1;
+  const Prob_Model2b = 1 / (1 + Math.exp(-P2_b));
+
+  // === Update Kilfoil QT Section ===
+  document.getElementById("estimatedQTc").innerHTML = `
+    <strong>Estimated QTc (log M):</strong> ${EstQTcLogM.toFixed(4)}<br>
+    <strong>Converted to µM:</strong> ${EstQTc_uM.toFixed(4)} µM
+  `;
+
+  // === Update Model 1 Risk Section ===
+  document.getElementById("model1Risk").innerHTML = `
+    <p><strong>High/Intermediate TdP Risk:</strong> ${(Prob_Model1 * 100).toFixed(1)}%</p>
+    <p><strong>Low TdP Risk:</strong> ${((1 - Prob_Model1) * 100).toFixed(1)}%</p>
+  `;
+
+  // === Bar Chart for Model 2 ===
+  if (barChart) barChart.destroy();
+  barChart = new Chart(document.getElementById("riskBarChart"), {
+    type: "bar",
+    data: {
+      labels: ["High", "Intermediate", "Low"],
+      datasets: [{
+        label: "% TdP Risk (Model 2)",
+        data: [Prob_Model2a * 100, Prob_Model2b * 100, (1 - Prob_Model2a - Prob_Model2b) * 100],
+        backgroundColor: ["#d9534f", "#f0ad4e", "#5cb85c"]
+      }]
+    },
+    options: { scales: { y: { beginAtZero: true, max: 100 } } }
+  });
+
+  // === Hill Curve Plot ===
+  const minConc = Math.max(0.001, Math.min(...concentrations));
+  const maxConc = Math.max(...concentrations);
+  const fitX = Array.from({ length: 100 }, (_, i) =>
+    Math.pow(10, Math.log10(minConc) + i * (Math.log10(maxConc) - Math.log10(minConc)) / 99)
+  );
+  const fitY = fitX.map(x => hillFunc(x, bestParams));
+
+  if (hillChart) hillChart.destroy();
+  hillChart = new Chart(document.getElementById("hillPlot"), {
+    type: "line",
     data: {
       labels: fitX,
       datasets: [
         {
-          label: 'Hill Fit Curve',
-          data: fitY,
-          borderColor: '#007bff',
+          label: "Hill Fit Curve",
+          data: fitX.map((x, i) => ({ x, y: fitY[i] })),
           borderWidth: 2,
+          borderColor: "#2c7be5",
           fill: false,
-          pointRadius: 0
+          tension: 0.1
         },
         {
-          label: 'Data Points',
-          type: 'scatter',
-          data: logXVals.map((x, i) => ({ x: x, y: yVals[i] })),
-          backgroundColor: '#ff6384',
-          pointRadius: 5
-        },
-        {
-          label: 'Cmax',
-          type: 'line',
-          data: [
-            { x: logCmax, y: Math.min(...yVals) },
-            { x: logCmax, y: Math.max(...yVals) }
-          ],
-          borderColor: '#28a745',
-          borderWidth: 2,
-          borderDash: [6, 4],
-          fill: false,
-          pointRadius: 0
+          label: "Cmax Point",
+          data: [{ x: Cmax, y: FPD_Cmax }],
+          pointBackgroundColor: "#ff6b6b",
+          pointRadius: 6,
+          type: "scatter"
         }
       ]
     },
     options: {
-      responsive: true,
-      plugins: {
-        legend: { display: false }
-      },
       scales: {
-        x: { type: 'linear', title: { display: true, text: 'log₁₀[Concentration (µM)]' } },
-        y: { title: { display: true, text: 'FPDc (ms)' } }
+        x: { type: "logarithmic", title: { display: true, text: "Concentration (µM)" } },
+        y: { title: { display: true, text: "FPDc (ms)" } }
+      },
+      plugins: {
+        tooltip: { enabled: true },
+        legend: { position: "top" }
       }
     }
   });
-}
+});
 
-function processInput() {
-  let cmax = parseFloat(document.getElementById("cmax").value);
-  if (isNaN(cmax)) {
-    alert("Please enter a valid Cmax value.");
-    return;
-  }
-  if (!cmaxIsNM) cmax *= 1000;
-
-  const tableRows = document.querySelectorAll("#dataBody tr");
-  const conc = [], fpd = [];
-  for (let row of tableRows) {
-    const inputs = row.querySelectorAll("input");
-    const x = parseFloat(inputs[0].value);
-    const y = parseFloat(inputs[1].value);
-    if (!isNaN(x) && !isNaN(y)) {
-      conc.push(x);
-      fpd.push(y);
-    }
-  }
-  if (conc.length < 2 || fpd.length < 2) {
-    alert("Please enter at least two valid data pairs.");
-    return;
-  }
-
-  const Emax = Math.max(...fpd);
-  const EC50 = conc[Math.floor(conc.length / 2)];
-  const HillSlope = 1.2;
-  const fittedFunc = (x) => {
-    const denom = Math.pow(EC50, HillSlope) + Math.pow(x, HillSlope);
-    return denom === 0 ? NaN : Emax * Math.pow(x, HillSlope) / denom;
-  };
-
-  drawHillPlot(conc, fpd, cmax, fittedFunc);
-  updateQTcDisplay(-8.2);
-  drawRiskChart(isModel1);
+function median(arr) {
+  const sorted = [...arr].sort((a, b) => a - b);
+  const mid = Math.floor(sorted.length / 2);
+  return sorted.length % 2 !== 0 ? sorted[mid] : (sorted[mid - 1] + sorted[mid]) / 2;
 }
