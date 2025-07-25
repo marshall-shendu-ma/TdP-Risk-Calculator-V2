@@ -1,4 +1,8 @@
 
+let hillChart, barChart;
+let cmaxIsNM = true;
+let Prob_Model1, Prob_Model2a, Prob_Model2b;
+let currentModel = 2;
 window.onload = function () {
   let hillChart, barChart;
   let cmaxIsNM = true;
@@ -112,13 +116,13 @@ window.onload = function () {
     const Threshold_C_logM = Math.log10(Threshold_C * 1e-6);
 
     const P1_High = -0.1311 + Predictor1 + Predictor4 * 0.00687 + Predictor7 * 0.0232;
-    const Prob_Model1 = 1 / (1 + Math.exp(-P1_High));
+    Prob_Model1 = 1 / (1 + Math.exp(-P1_High));
 
     const P2_a = -2.1102 + cellType * 0.2211 + 0.00105 * Predictor4 + 0.0338 * Predictor7 + Predictor1;
-    const Prob_Model2a = 1 / (1 + Math.exp(-P2_a));
+    Prob_Model2a = 1 / (1 + Math.exp(-P2_a));
 
     const P2_b = -0.1211 + cellType * 0.2211 + 0.00105 * Predictor4 + 0.0338 * Predictor7 + Predictor1;
-    const Prob_Model2b = 1 / (1 + Math.exp(-P2_b));
+    Prob_Model2b = 1 / (1 + Math.exp(-P2_b));
 
     document.getElementById("estimatedQTc").innerHTML = `
       <strong>Estimated QTc (log M):</strong> ${EstQTcLogM.toFixed(4)}<br>
