@@ -1,9 +1,8 @@
 
 window.onload = function () {
-  let Prob_Model1, Prob_Model2a, Prob_Model2b;
-  let currentModel = 2;
   let hillChart, barChart;
   let cmaxIsNM = true;
+  let currentModel = 2;
 
   document.getElementById("switchCmaxUnit").addEventListener("click", function () {
     const cmaxInput = document.getElementById("cmax");
@@ -114,13 +113,13 @@ window.onload = function () {
     const Threshold_C_logM = Math.log10(Threshold_C * 1e-6);
 
     const P1_High = -0.1311 + Predictor1 + Predictor4 * 0.00687 + Predictor7 * 0.0232;
-    Prob_Model1 = 1 / (1 + Math.exp(-P1_High));
+    const Prob_Model1 = 1 / (1 + Math.exp(-P1_High));
 
     const P2_a = -2.1102 + cellType * 0.2211 + 0.00105 * Predictor4 + 0.0338 * Predictor7 + Predictor1;
-    Prob_Model2a = 1 / (1 + Math.exp(-P2_a));
+    const Prob_Model2a = 1 / (1 + Math.exp(-P2_a));
 
     const P2_b = -0.1211 + cellType * 0.2211 + 0.00105 * Predictor4 + 0.0338 * Predictor7 + Predictor1;
-    Prob_Model2b = 1 / (1 + Math.exp(-P2_b));
+    const Prob_Model2b = 1 / (1 + Math.exp(-P2_b));
 
     document.getElementById("estimatedQTc").innerHTML = `
       <strong>Estimated QTc (log M):</strong> ${EstQTcLogM.toFixed(4)}<br>
@@ -188,31 +187,18 @@ window.onload = function () {
       }
     });
   });
-};
-
   document.getElementById("toggleRiskModel").onclick = function () {
-    if (!barChart || Prob_Model1 == null || Prob_Model2a == null) return;
-
+    if (!barChart || typeof Prob_Model1 === "undefined" || typeof Prob_Model2a === "undefined") return;
     currentModel = currentModel === 2 ? 1 : 2;
-
     const newData = currentModel === 2
       ? [Prob_Model2a * 100, Prob_Model2b * 100, (1 - Prob_Model2a - Prob_Model2b) * 100]
       : [Prob_Model1 * 100, 0, (1 - Prob_Model1) * 100];
-
     const newTitle = currentModel === 2 ? "Model 2 TdP Risk" : "Model 1 TdP Risk";
-    const newProb = currentModel === 2
-      ? (Prob_Model2a * 100).toFixed(1)
-      : (Prob_Model1 * 100).toFixed(1);
-
+    const newProb = currentModel === 2 ? (Prob_Model2a * 100).toFixed(1) : (Prob_Model1 * 100).toFixed(1);
     document.getElementById("riskPlotTitle").innerText = newTitle;
-
     const probElem = document.getElementById("tdpProbability");
-    if (probElem) {
-      probElem.innerHTML = `<strong>TdP Risk Probability %:</strong> ${newProb}%`;
-    }
-
+    if (probElem) probElem.innerHTML = `<strong>TdP Risk Probability %:</strong> ${newProb}%`;
     barChart.data.datasets[0].data = newData;
     barChart.update();
   };
-
 };
