@@ -3,6 +3,7 @@ window.onload = function () {
   let hillChart, barChart;
   let cmaxIsNM = true;
   let currentModel = 2;
+  let currentModel = 2;
 
   document.getElementById("switchCmaxUnit").addEventListener("click", function () {
     const cmaxInput = document.getElementById("cmax");
@@ -187,7 +188,6 @@ window.onload = function () {
       }
     });
   });
-  document.getElementById("toggleRiskModel").onclick = function () {
     if (!barChart || typeof Prob_Model1 === "undefined" || typeof Prob_Model2a === "undefined") return;
     currentModel = currentModel === 2 ? 1 : 2;
     const newData = currentModel === 2
@@ -201,4 +201,18 @@ window.onload = function () {
     barChart.data.datasets[0].data = newData;
     barChart.update();
   };
+  document.getElementById("toggleRiskModel").addEventListener("click", function () {
+    if (!barChart || typeof Prob_Model1 === "undefined" || typeof Prob_Model2a === "undefined") return;
+    currentModel = currentModel === 2 ? 1 : 2;
+    const newData = currentModel === 2
+      ? [Prob_Model2a * 100, Prob_Model2b * 100, (1 - Prob_Model2a - Prob_Model2b) * 100]
+      : [Prob_Model1 * 100, 0, (1 - Prob_Model1) * 100];
+    const newTitle = currentModel === 2 ? "Model 2 TdP Risk" : "Model 1 TdP Risk";
+    const newProb = currentModel === 2 ? (Prob_Model2a * 100).toFixed(1) : (Prob_Model1 * 100).toFixed(1);
+    document.getElementById("riskPlotTitle").innerText = newTitle;
+    const probElem = document.getElementById("tdpProbability");
+    if (probElem) probElem.innerHTML = `<strong>TdP Risk Probability %:</strong> ${newProb}%`;
+    barChart.data.datasets[0].data = newData;
+    barChart.update();
+  });
 };
