@@ -74,12 +74,11 @@
       </div>
 
       <div class="chart-block">
-        <h2>Model 1 TdP Risk</h2>
-        <div id="model1Risk"></div>
-      </div>
-
-      <div class="chart-block">
-        <h2>Model 2 TdP Risk</h2>
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <h2 id="riskPlotTitle">Model 2 TdP Risk</h2>
+          <button id="toggleRiskModel" class="small-btn">Switch Model</button>
+        </div>
+        <p id="tdpProbability"><strong>TdP Risk Probability %:</strong></p>
         <canvas id="riskBarChart"></canvas>
       </div>
 
