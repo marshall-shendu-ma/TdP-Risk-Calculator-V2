@@ -4,6 +4,7 @@ window.onload = function () {
   let cmaxIsNM = true;
   let currentModel = 2;
 
+  document.getElementById("switchCmaxUnit").addEventListener("click", function () {
     const cmaxInput = document.getElementById("cmax");
     const cmaxLabel = document.getElementById("cmaxLabel");
     let value = parseFloat(cmaxInput.value);
@@ -186,7 +187,7 @@ window.onload = function () {
       }
     });
   });
-  document.getElementById("toggleRiskModel").addEventListener("click", function () {
+  document.getElementById("toggleRiskModel").onclick = function () {
     if (!barChart || typeof Prob_Model1 === "undefined" || typeof Prob_Model2a === "undefined") return;
     currentModel = currentModel === 2 ? 1 : 2;
     const newData = currentModel === 2
@@ -199,5 +200,5 @@ window.onload = function () {
     if (probElem) probElem.innerHTML = `<strong>TdP Risk Probability %:</strong> ${newProb}%`;
     barChart.data.datasets[0].data = newData;
     barChart.update();
-  });
+  };
 };
