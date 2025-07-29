@@ -1,1 +1,24 @@
 body { font-family: sans-serif; padding: 20px; background: #f8f8f8; }
+/* FDA blue header */
+header h1 {
+  background-color: #005eb8;
+  color: #fff;
+  padding: 10px;
+  border-radius: 4px;
+}
+
+/* Section titles Title Case */
+section h2, section h3 {
+  text-transform: capitalize;
+}
+
+/* Subsection headings larger */
+section h3 {
+  font-size: 1.25rem;
+  margin-top: 1em;
+}
+
+/* Body line spacing */
+body, p, li {
+  line-height: 1.6;
+}
