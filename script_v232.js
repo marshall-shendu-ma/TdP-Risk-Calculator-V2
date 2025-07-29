@@ -166,16 +166,14 @@ window.onload = function() {
           },
           {
             label: "Cmax Line",
-            data: [
-              { x: Cmax, y: Math.min(...fpdcs) },
-              { x: Cmax, y: Math.max(...fpdcs) }
-            ],
+            data: [{ x: Cmax, y: yMin }, { x: Cmax, y: yMax }],
             type: "line",
             parsing: false,
             pointRadius: 0,
             borderColor: "#e64b35",
             borderWidth: 4,
-            borderDash: [10, 5]
+            borderDash: [10, 5],
+            fill: false
           }
         ]
       },
@@ -183,38 +181,18 @@ window.onload = function() {
         scales: {
           x: {
             type: "logarithmic",
-            title: {
-              display: true,
-              text: "Concentration (µM)",
-              font: { size: 16, weight: "bold" }
-            },
-            ticks: {
-              font: { size: 14, weight: "bold" }
-            },
+            title: { display: true, text: "Concentration (µM)", font: { size: 16, weight: "bold" } },
+            ticks: { font: { size: 14, weight: "bold" } },
             grid: { lineWidth: 3 }
           },
           y: {
-            title: {
-              display: true,
-              text: "FPDc (ms)",
-              font: { size: 16, weight: "bold" }
-            },
-            ticks: {
-              font: { size: 14, weight: "bold" }
-            },
+            title: { display: true, text: "FPDc (ms)", font: { size: 16, weight: "bold" } },
+            ticks: { font: { size: 14, weight: "bold" } },
             grid: { lineWidth: 3 }
           }
         },
-        plugins: {
-          legend: {
-            position: "top",
-            labels: {
-              font: { size: 14, weight: "bold" }
-            }
-          }
-        }
+        plugins: { legend: { position: "top", labels: { font: { size: 14, weight: "bold" } } } }
       }
     });
-
-  });
+});
 };
