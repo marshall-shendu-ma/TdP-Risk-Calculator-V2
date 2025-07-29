@@ -53,12 +53,36 @@ window.onload = function() {
       lbl="% TdP Risk (Model 2)";
     }
     if(modelChart) modelChart.destroy();
+    
+    if (modelChart) modelChart.destroy();
     modelChart = new Chart(document.getElementById("modelChart"), {
-      type:"bar",
-      data:{labels, datasets:[{label:lbl, data, backgroundColor:labels.map(l=>l.includes('Low')?'#5cb85c':l.includes('High')?'#d9534f':'#f0ad4e')}]},
-      options:{scales:{y:{beginAtZero:true,max:100}}, plugins:{legend:{display:false}}}
+      type: "bar",
+      data: {
+        labels,
+        datasets: [{
+          label: lbl,
+          data,
+          backgroundColor: labels.map(l => l.includes('Low') ? '#5cb85c' : (l.includes('High') ? '#d9534f' : '#f0ad4e'))
+        }]
+      },
+      options: {
+        scales: {
+          x: {
+            ticks: { font: { size: 16, weight: "bold" } },
+            grid: { lineWidth: 2 }
+          },
+          y: {
+            title: { display: true, text: "% TdP Risk", font: { size: 18, weight: "bold" } },
+            ticks: { font: { size: 16, weight: "bold" } },
+            grid: { lineWidth: 2 }
+          }
+        },
+        plugins: {
+          legend: { display: false, labels: { font: { size: 16, weight: "bold" } } }
+        }
+      }
     });
-  };
+;
 
   document.getElementById("toggleModelBtn").addEventListener("click", () => {
     isModel1 = !isModel1;
