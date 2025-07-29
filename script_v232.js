@@ -109,6 +109,8 @@ window.onload = function() {
     const minC=Math.max(0.001,Math.min(...concs)), maxC=Math.max(...concs);
     const fitX=Array.from({length:100},(_,i)=>Math.pow(10,Math.log10(minC)+i*(Math.log10(maxC)-Math.log10(minC))/99));
     const fitY=fitX.map(x=>hill(x,best));
+    const yMin = Math.min(...fitY, ...fpdcs);
+    const yMax = Math.max(...fitY, ...fpdcs);
     if(hillChart)hillChart.destroy();
     
     hillChart = new Chart(document.getElementById("hillPlot"), {
