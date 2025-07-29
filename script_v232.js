@@ -37,7 +37,7 @@ window.onload = function() {
     if(isModel1) {
       title.innerText="Model 1 TdP Risk (Logistic Regression)";
       sub.innerText="Logistic regression predicting high or low risk.";
-      res.innerHTML=`<p><strong>High/Intermediate Risk:</strong> ${(Prob1*100).toFixed(1)}%</p>
+      res.innerHTML=`<p><strong>High or Intermediate Risk:</strong> ${(Prob1*100).toFixed(1)}%</p>
                      <p><strong>Low Risk:</strong> ${((1-Prob1)*100).toFixed(1)}%</p>`;
       labels=["High/Intermediate Risk","Low Risk"];
       data=[Prob1*100,(1-Prob1)*100];
