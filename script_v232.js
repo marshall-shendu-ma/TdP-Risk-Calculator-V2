@@ -12,6 +12,7 @@ window.onload = function() {
     else { v*=1000; lbl.innerText="Cmax (nM)"; }
     inp.value=v.toFixed(4);
     cmaxIsNM = !cmaxIsNM;
+  });
 
   window.addRow = function() {
     const tb = document.getElementById("dataBody");
@@ -52,61 +53,17 @@ window.onload = function() {
       lbl="% TdP Risk (Model 2)";
     }
     if(modelChart) modelChart.destroy();
-    
-    if (modelChart) modelChart.destroy();
     modelChart = new Chart(document.getElementById("modelChart"), {
-      type: "bar",
-      data: {
-        labels,
-        datasets: [
-          {
-            label: "Hill Fit Curve",
-            data: fitX.map((x,i) => ({ x, y: fitY[i] })),
-            borderColor: "#2c7be5",
-            borderWidth: 3,
-            fill: false,
-            tension: 0.1,
-            type: "line"
-          },
-          {
-            label: "Cmax Line",
-            data: [{ x: Cmax, y: 0 }, { x: Cmax, y: Math.max(...fpdcs) }],
-            borderColor: "#d9534f",
-            borderWidth: 3,
-            borderDash: [5,5],
-            fill: false,
-            showLine: true,
-            pointRadius: 0,
-            type: "line"
-          },
-          {
-            label: "Input Data",
-            data: concentrations.map((c,i) => ({ x: c, y: fpdcs[i] })),
-            pointBackgroundColor: "#333",
-            pointRadius: 5,
-            type: "scatter"
-          }
-        ], options: {
-        scales: {
-          x: {
-            ticks: { font: { size: 16, weight: "bold" } },
-            grid: { lineWidth: 2 }
-          },
-          y: {
-            title: { display: true, text: "% TdP Risk", font: { size: 18, weight: "bold" } },
-            ticks: { font: { size: 16, weight: "bold" } },
-            grid: { lineWidth: 2 }
-          }
-        },
-        plugins: {
-          legend: { display: false, labels: { font: { size: 16, weight: "bold" } } }
-        }
-      }
-;
+      type:"bar",
+      data:{labels, datasets:[{label:lbl, data, backgroundColor:labels.map(l=>l.includes('Low')?'#5cb85c':l.includes('High')?'#d9534f':'#f0ad4e')}]},
+      options:{scales:{y:{beginAtZero:true,max:100}}, plugins:{legend:{display:false}}}
+    });
+  };
 
   document.getElementById("toggleModelBtn").addEventListener("click", () => {
     isModel1 = !isModel1;
     updateModelPanel();
+  });
 
   document.getElementById("riskForm").addEventListener("submit", e => {
     e.preventDefault();
@@ -121,6 +78,7 @@ window.onload = function() {
       const [i1,i2]=r.querySelectorAll("input");
       const c=parseFloat(i1.value), f=parseFloat(i2.value);
       if(!isNaN(c)&&!isNaN(f)){concs.push(c);fpdcs.push(f);}
+    });
     if(concs.length<3){alert("Please enter at least 3 data points.");return;}
     // Hill fit
     const Bottom=Math.min(...fpdcs), Top=Math.max(...fpdcs),
@@ -143,9 +101,7 @@ window.onload = function() {
     // Update QT output
     const Thr=assay==="30"?Bottom*1.103:Bottom*1.0794,
           logM=assay==="30"? (Thr+0.35)/0.92:(Thr+0.17)/0.93;
-    document.getElementById("estimatedQTc").innerHTML=`
-      <strong>Estimated QTc (log M):</strong> ${logM.toFixed(4)}<br>
-      <strong>Estimated Concentration to induce >10ms QT prolongation:</strong> ${Math.pow(10,logM).toFixed(4)} µM`;
+    document.getElementById("estimatedQTc").innerHTML = '<strong>Estimated QTc (log M):</strong> ' + logM.toFixed(4) + '<br><strong>Estimated Concentration to induce >10ms QT prolongation:</strong> ' + Math.pow(10,logM).toFixed(4) + ' µM';
     // Initial model1 display
     isModel1=true;
     updateModelPanel();
@@ -161,4 +117,6 @@ window.onload = function() {
         {label:"Cmax Point",data:[{x:Cmax,y:FPD_Cmax}],pointBackgroundColor:"#ff6b6b",pointRadius:6,type:"scatter"}
       ]},
       options:{scales:{x:{type:"logarithmic",title:{display:true,text:"Concentration (µM)"}},y:{title:{display:true,text:"FPDc (ms)"}}},plugins:{legend:{position:"top"}}}
+    });
+  });
 };
