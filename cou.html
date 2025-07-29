@@ -1,51 +1,45 @@
 <!DOCTYPE html>
-<html lang="en"><head>
-<meta charset="UTF-8"><title>Context of Use - TdP Risk Calculator</title>
-<link rel="stylesheet" href="style.css"></head><body><div class="app">
-<header><h1>Context of Use (CoU)</h1></header>
-<section><h2>Context of Use</h2>
-<p>Delayed ventricular repolarization can create a proarrhythmic environment that results in life-threatening cardiac arrhythmias including Torsades de pointes (TdP). A significant challenge in drug development and regulatory decision making is determining the proarrhythmic potential of novel compounds.</p>
-<p>The TdP risk categorization calculator tool is used to assess the TdP risk of small molecule compounds in healthy adults to create human-relevant data for greater evidence of safety assurance for drug development and regulatory decision making.</p>
-<p>Fitting of these results through machine learning algorithms were used to develop this open-source online calculator.</p>
-<p>This calculator receives compound-induced input predictors:</p>
-<ul>
-<li>Predictor 1, Did compound induced arrhythmias occur at any concentration? (0=no arrhythmia, 1=type A arrhythmia, 2=any other arrhythmia type)</li>
-<ul>
-<li>Predictor 2, Were drug-induced arrhythmias observed at any concentration in ≥ 40% wells. (typically in at least 2 out of 5 replicate wells) (0=no, 1=yes)</li>
-<ul>
-<li>Predictor 3, Repolarization prolongation (ms) at the first drug concentration with statistically significant (p≤0.05) prolongation or shortening.</li>
-<ul>
-<li>Predictor 4, Maximum repolarization change (ms) observed at any concentration.</li>
-<ul>
-<li>Predictor 5, Drug concentration (folds over Cmax) at which the first statistically significant (p≤0.05) repolarization prolongation was first observed.</li>
-<ul>
-<li>Predictor 6, Drug concentration (folds over Cmax) when drug-induced arrhythmias were first observed.</li>
-<ul>
-<li>Predictor 7, Drug-induced repolarization change (ms) at Cmax.</li>
-<p>And provides as outputs:</p>
-<p>TdP risk categorization estimated from in vitro experiments on hiPSC-CMs</p>
-<p>Model 1:</p>
-<p>Low TdP Risk probability estimation</p>
-<p>High or intermediate TdP risk probability estimation</p>
-<p>Model 2:</p>
-<p>Low TdP Risk probability estimation</p>
-<p>Intermediate TdP risk probability estimation</p>
-<p>High TdP risk probability estimation</p>
-<section><h2>Formulas for TdP risk categorization estimation</h2>
-<p>Model 1:</p>
-<p>Model 2:</p>
-<p>Probability of high vs low (P2a):</p>
-<p>Probability of intermediate vs low (P2b):</p>
-<section><h2>Limitations of use</h2>
-<p>While this study provides valuable insight into potential TdP risk categories it has some limitations described here (Blinova et al 2018).</p>
-<p>Well-exposure analysis studies were not conducted to measure free drug concentration in hiPSC-CM experiments. Future studies should consider detailed well-exposure analysis to determine the amount of nonspecific binding.</p>
-<p>The tool does not account for drug metabolites as such active drug metabolites should be investigated independently.</p>
-<p>Repolarization wave can be decreased (blunted) following exposure to some compounds making it challenging to detect FPD prolongation.</p>
-<p>Only acute (30 minutes) assay duration was investigated. However, chronic timepoints (e.g., days to weeks) may be of interest for specific compounds (e.g., hERG trafficking inhibitors).</p>
-<p> This study was not statistically powered to investigate the effect of the electrophysiological device (platform) on the hiPSC-CM assay’s predictivity of proarrhythmic drug potential.</p>
-<p>This study was conducted on spontaneous beating (non-paced) hiPSC-CMs. Utilization of field stimulated (paced) input parameters (Patel et al 2019) will require additional verification and validation.</p>
-<p>To extend this tool to more complex in vitro models (e.g., co-culture, 3D, disease models) specific verification, validation and optimization will be required.</p>
-<section><h2>References</h2>
-<p>Blinova 2018 PMID: 30257217</p>
-<p>Patel et al 2019 PMID: 30912807</p>
-</section></div></body></html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Context of Use - TdP Risk Categorization Tool</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app">
+    <header><h1 id="coU">Context of Use (CoU)</h1></header>
+    <section>
+      <h2>Context of Use</h2>
+      <p>Delayed ventricular repolarization can create a proarrhythmic environment that results in life-threatening cardiac arrhythmias including Torsades de pointes (TdP). A significant challenge in drug development and regulatory decision making is determining the proarrhythmic potential of novel compounds.</p>
+      <p>The TdP risk categorization calculator tool is used to assess the TdP risk of small molecule compounds in healthy adults to create human-relevant data for greater evidence of safety assurance for drug development and regulatory decision making.</p>
+      <p>Fitting of these results through machine learning algorithms were used to develop this open-source online calculator.</p>
+      <p>This calculator receives compound-induced input predictors:</p>
+      <ol>
+        <li>Predictor 1: Did compound induced arrhythmias occur at any concentration? (0=no arrhythmia, 1=type A arrhythmia, 2=other arrhythmia)</li>
+        <li>Predictor 4: Maximum repolarization change (ms) observed at any concentration.</li>
+        <li>Predictor 7: Drug-induced repolarization change (ms) at Cmax.</li>
+      </ol>
+    </section>
+    <section>
+      <h2>Formulas for TdP Risk Categorization Estimation</h2>
+      <p><strong>Model 1:</strong> P = 1 / (1 + exp[-(−0.1311 + Predictor1 + 0.00687×Predictor4 + 0.0232×Predictor7)])</p>
+      <p><strong>Model 2:</strong> 
+         P_high = 1 / (1 + exp[−(−2.1102 + 0.2211×CellType + 0.00105×Predictor4 + 0.0338×Predictor7 + Predictor1)])<br>
+         P_intermediate = 1 / (1 + exp[−(−0.1211 + 0.2211×CellType + 0.00105×Predictor4 + 0.0338×Predictor7 + Predictor1)])</p>
+    </section>
+    <section id="limitations">
+      <h2>Limitations of use</h2>
+      <ul>
+        <li>Well-exposure analysis was not conducted to measure free drug concentration in hiPSC-CM experiments.</li>
+        <li>The tool does not account for drug metabolites, which should be investigated separately.</li>
+        <li>Repolarization wave changes may be difficult to detect for blunted responses.</li>
+        <li>Only acute (30 min) assay duration was examined; chronic exposures may require verification.</li>
+      </ul>
+    </section>
+    <section>
+      <h2>References</h2>
+      <p>Blinova et al. 2018 PMID: 30257217<br>Patel et al. 2019 PMID: 30912807</p>
+    </section>
+  </div>
+</body>
+</html>
