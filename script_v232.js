@@ -120,14 +120,36 @@ window.onload = function() {
       if(err<ml){ml=err;best=t;}
     }
     const FPD_Cmax=hill(Cmax||0.01,best);
-    // Probabilities
-    const P1=-0.1311+arr+Math.max(...fpdcs)*0.00687+FPD_Cmax*0.0232;
-    Prob1=1/(1+Math.exp(-P1));
-    const P2a=-2.1102+cell*0.2211+0.00105*Math.max(...fpdcs)+0.0338*FPD_Cmax+arr;
-    const P2b=-0.1211+cell*0.2211+0.00105*Math.max(...fpdcs)+0.0338*FPD_Cmax+arr;
-    Prob2a=1/(1+Math.exp(-P2a));
-    Prob2b=1/(1+Math.exp(-P2b));
+    
+    // Probabilities using explicit Predictor1 mappings
+    const map1  = [0,    0.6583, 1.7944];    // Model 1 intercept offsets
+    const map2a = [0,    1.0551, 2.1732];    // Model 2a intercept offsets
+    const map2b = [0,    0.3865, 0.8737];    // Model 2b intercept offsets
+
+    // Model 1 logistic regression
+    const logit1 = -0.1311
+                 + map1[arr]
+                 + 0.00687 * Math.max(...fpdcs)
+                 + 0.0232 * FPD_Cmax;
+    Prob1 = 1 / (1 + Math.exp(-logit1));
+
+    // Model 2 ordinal (high vs low)
+    const logit2a = -0.1211
+                  + cell * 0.2211
+                  + map2a[arr]
+                  + 0.00105 * Math.max(...fpdcs)
+                  + 0.0338 * FPD_Cmax;
+    Prob2a = 1 / (1 + Math.exp(-logit2a));
+
+    // Model 2 ordinal (intermediate vs low)
+    const logit2b = -2.1102
+                  + cell * 0.2211
+                  + map2b[arr]
+                  + 0.00105 * Math.max(...fpdcs)
+                  + 0.0338 * FPD_Cmax;
+    Prob2b = 1 / (1 + Math.exp(-logit2b));
     // Update QT output
+
     const Thr=assay==="30"?Bottom*1.103:Bottom*1.0794,
           logM=assay==="30"? (Thr+0.35)/0.92:(Thr+0.17)/0.93;
     document.getElementById("estimatedQTc").innerHTML = '<strong>Estimated QTc (log M):</strong> ' + logM.toFixed(4) + '<br><strong>Estimated Concentration to induce >10ms QT prolongation:</strong> ' + Math.pow(10,logM).toFixed(4) + ' µM';
