@@ -263,3 +263,33 @@ document.getElementById('predictorCalc').addEventListener('click', () => {
 
   });
 };
+
+// Compute risk directly from user predictors
+function computeRiskFromPredictors(p1, p4, p7) {
+  const map1  = [0, 0.6583, 1.7944];
+  const map2a = [0, 1.0551, 2.1732];
+  const map2b = [0, 0.3865, 0.8737];
+  // Override arr and cell
+  arr = p1;
+  const cellVal = parseFloat(document.getElementById("celltype").value) || 0;
+  // Model 1 logistic regression
+  const logit1 = -0.1311 + map1[arr] + 0.00687 * p4 + 0.0232 * p7;
+  Prob1 = 1 / (1 + Math.exp(-logit1));
+  // Model 2 ordinal regression
+  const logit2a = -0.1211 + cellVal * 0.2211 + map2a[arr] + 0.00105 * p4 + 0.0338 * p7;
+  Prob2a = 1 / (1 + Math.exp(-logit2a));
+  const logit2b = -2.1102 + cellVal * 0.2211 + map2b[arr] + 0.00105 * p4 + 0.0338 * p7;
+  Prob2b = 1 / (1 + Math.exp(-logit2b));
+  // Show Model 1 by default
+  isModel1 = true;
+  updateModelPanel();
+}
+
+// New predictor calculate button listener
+document.getElementById("predictorCalcBtn").addEventListener("click", function(e) {
+  e.preventDefault();
+  const p1 = parseInt(document.getElementById("pred1").value) || 0;
+  const p4 = parseFloat(document.getElementById("pred4").value) || 0;
+  const p7 = parseFloat(document.getElementById("pred7").value) || 0;
+  computeRiskFromPredictors(p1, p4, p7);
+});
