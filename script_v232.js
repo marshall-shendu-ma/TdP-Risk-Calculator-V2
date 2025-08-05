@@ -1,7 +1,12 @@
 window.onload = function() {
+  // Trigger calculate from predictor section
+  document.getElementById("predictorCalc").addEventListener("click", () => {
+    document.getElementById("riskForm").requestSubmit();
+  });
+
   let hillChart, modelChart, isModel1 = true;
   let Prob1, Prob2a, Prob2b;
-  let cmaxIsNM = false;
+  let cmaxIsNM = true;
 
   // Toggle Cmax unit
   document.getElementById("switchCmaxUnit").addEventListener("click", () => {
@@ -95,15 +100,12 @@ window.onload = function() {
   });
 
   document.getElementById("riskForm").addEventListener("submit", e => {
+    // Read new predictor inputs if present
+    const predictor1_val = parseInt(document.getElementById("pred1").value) || 0;
+    const predictor4_val = parseFloat(document.getElementById("pred4").value) || 0;
+    const predictor7_val = parseFloat(document.getElementById("pred7").value) || 0;
+
     e.preventDefault();
-    // Read user predictors
-    const arr = parseInt(document.getElementById("pred1").value) || 0;
-    const predictor4 = parseFloat(document.getElementById("pred4").value) || 0;
-    const predictor7 = parseFloat(document.getElementById("pred7").value) || 0;
-    // Read user-provided predictors
-    const predictor1_input = parseInt(document.getElementById("pred1").value) || 0;
-    const predictor4_input = parseFloat(document.getElementById("pred4").value) || 0;
-    const predictor7_input = parseFloat(document.getElementById("pred7").value) || 0;
     const cmaxRaw=parseFloat(document.getElementById("cmax").value),
           Cmax=cmaxIsNM?cmaxRaw/1000:cmaxRaw,
           arr=parseInt(document.getElementById("arrhythmia").value),
@@ -129,21 +131,9 @@ window.onload = function() {
     }
     const FPD_Cmax=hill(Cmax||0.01,best);
     // Override computed predictors with user inputs
-    let predictor4 = predictor4_input;
-    let predictor7 = predictor7_input;
-    let arr = predictor1_input;
-    // Zero predictors if all inputs are zero
-    
-    // If no FPD changes, force low risk and alert
-    if (allZero) {
-      alert("The input data indicates no changes in FPD, TdP risk cannot be justified properly.");
-      Prob1 = 0;
-      Prob2a = 0;
-      Prob2b = 0;
-      isModel1 = true;
-      updateModelPanel();
-      return;  // skip further calculations
-    }
+    arr = predictor1_val;
+    const predictor4 = predictor4_val;
+    const predictor7 = predictor7_val;
     
     // Probabilities using explicit Predictor1 mappings
     const map1  = [0,    0.6583, 1.7944];    // Model 1 intercept offsets
@@ -153,24 +143,24 @@ window.onload = function() {
     // Model 1 logistic regression
     const logit1 = -0.1311
                  + map1[arr]
-                 + 0.00687 * predictor4
-                 + 0.0232 * predictor7;
+                 + 0.00687 * Math.max(...fpdcs)
+                 + 0.0232 * FPD_Cmax;
     Prob1 = 1 / (1 + Math.exp(-logit1));
 
     // Model 2 ordinal (high vs low)
     const logit2a = -0.1211
                   + cell * 0.2211
                   + map2a[arr]
-                  + 0.00105 * predictor4
-                  + 0.0338 * predictor7;
+                  + 0.00105 * Math.max(...fpdcs)
+                  + 0.0338 * FPD_Cmax;
     Prob2a = 1 / (1 + Math.exp(-logit2a));
 
     // Model 2 ordinal (intermediate vs low)
     const logit2b = -2.1102
                   + cell * 0.2211
                   + map2b[arr]
-                  + 0.00105 * predictor4
-                  + 0.0338 * predictor7;
+                  + 0.00105 * Math.max(...fpdcs)
+                  + 0.0338 * FPD_Cmax;
     Prob2b = 1 / (1 + Math.exp(-logit2b));
     // Update QT output
 
@@ -247,7 +237,7 @@ window.onload = function() {
           y: {
             title: {
               display: true,
-              text: "ΔΔFPDc (ms)",
+              text: "FPDc (ms)",
               font: { size: 16, weight: "bold" }
             },
             ticks: {
