@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TdP Risk Calculator V3.10</title>
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" defer></script>
+  <script src="script_v232.js" defer></script>
+</head>
+<body>
+  <div class="app">
+    <header>...</header>
+
+    <!-- TdP Input Parameters -->
+    <section id="predictorSection" style="margin: 1rem 0;">
+      <h2>TdP Input Parameters</h2>
+      <div style="display:flex; gap:1rem;">
+        <label for="pred1">Predictor 1
+          <input type="number" id="pred1" name="pred1" min="0" max="2" step="1" style="width:100%" />
+          <small>Did drug induced arrhythmias occur... 0=no,1=type A,2=other</small>
+        </label>
+        <label for="pred4">Predictor 4
+          <input type="number" id="pred4" name="pred4" step="any" style="width:100%" />
+          <small>Max repolarization change... (ms)</small>
+        </label>
+        <label for="pred7">Predictor 7
+          <input type="number" id="pred7" name="pred7" step="any" style="width:100%" />
+          <small>Repolarization change at Cmax (ms)</small>
+        </label>
+      </div>
+      <button type="button" id="predictorCalcBtn">Calculate</button>
+    </section>
+
+    <!-- Cmax Extrapolation collapsed -->
+    <details>
+      <summary style="font-size:1.5rem;font-weight:bold;cursor:pointer;">
+        Cmax Extrapolation &#9654;
+      </summary>
+      <section id="cmaxSection">
+        <!-- existing input form: Cmax, data table, add row, calculate -->
+        <!-- Place your original form here -->
+      </section>
+    </details>
+
+    <!-- Remainder of the app... -->
+  </div>
+</body>
+</html>
