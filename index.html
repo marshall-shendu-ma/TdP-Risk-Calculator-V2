@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Categorization of TdP Risk Dependent on Compound Electrophysiological Response Predictors</title>
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" defer></script>
+  <script src="script_v232.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.11.0/math.min.js" defer></script>
+</head>
+<body>
+  <div class="app">
+    <header style="background-color: rgb(40,124,188); color: white; padding: 20px; margin-bottom: 20px;">
+  <h1 style="margin: 0; text-transform: none;">
+    Categorization of TdP Risk Dependent on Compound Electrophysiological Response Predictors
+  </h1>
+</header>
+    <section class="introduction">
+      <h2>TdP Risk Categorization Calculator Program</h2>
+      <p><strong>Instructions</strong></p>
+      <ol>
+        <li>For details on how to use the hiPSC-CM CiPA TdP Risk Categorization Tool, read the <a href="cou.html#coU" target="_blank">Context of Use (CoU)</a>, which includes <a href="cou.html#limitations" target="_blank">limitations of use</a>.</li>
+        <li>Insert the model predictor input parameters in the “TdP input parameters” table. Hover over the information icons next to each section header for parameters definition and range of use.</li>
+        <li>Read the outputs in the “Program outputs” table to obtain the TdP risk categorization estimated by the set of input parameter selected.</li>
+        <li>Graphical depiction of the estimated TdP risk potential will be displayed in “TdP risk categorization estimation” section. The concentration-response curves (i.e., Hill Curve) will change accordingly showing the estimated concentration maximum (Cmax) for the set of pulse parameter selected.</li>
+      </ol>
+    </section>
+    <section class="inputs">
+      <h2>TdP Input Parameters</h2>
+      <form id="riskForm">
+        <div class="field-group" style="display: flex; align-items: center; gap: 10px;">
+          <details>
+<summary>Cmax Extrapolation →</summary>
+<label for="cmax" id="cmaxLabel">Cmax (µM)</label>
+          <input type="number" step="any" id="cmax" placeholder="e.g. 150.5" required>
+          <button type="button" id="switchCmaxUnit" class="small-btn">Switch Unit</button>
+        </div>
+        <div class="field-group">
+          <label for="arrhythmia">Arrhythmia Type</label>
+          <select id="arrhythmia">
+            <option value="0">No arrhythmia</option>
+            <option value="1">Type A arrhythmia</option>
+            <option value="2">Other arrhythmia</option>
+          </select>
+        </div>
+        <div class="field-group">
+          <label for="celltype">Cell Type (numeric)</label>
+          <input type="number" step="any" id="celltype" value="0" placeholder="e.g. 5" required>
+        </div>
+        <div class="field-group">
+          <label for="assay">Assay Time</label>
+          <select id="assay">
+            <option value="30">30 min</option>
+            <option value="24">24 hours</option>
+          </select>
+        </div>
+        <div class="field-group wide">
+          <label>Concentration – FPDc Pairs</label>
+          <table>
+            <thead><tr><th>ΔΔFPDc (ms)</th><th></th></tr></thead>
+            <tbody id="dataBody">
+              <tr><td><input type="number" step="any" required name="concentration[]"></td><td><input type="number" step="any" required name="fpdc[]"></td><td><button type="button" onclick="removeRow(this)">−</button></td></tr>
+              <tr><td><input type="number" step="any" required name="concentration[]"></td><td><input type="number" step="any" required name="fpdc[]"></td><td><button type="button" onclick="removeRow(this)">−</button></td></tr>
+              <tr><td><input type="number" step="any" required name="concentration[]"></td><td><input type="number" step="any" required name="fpdc[]"></td><td><button type="button" onclick="removeRow(this)">−</button></td></tr>
+              <tr><td><input type="number" step="any" required name="concentration[]"></td><td><input type="number" step="any" required name="fpdc[]"></td><td><button type="button" onclick="removeRow(this)">−</button></td></tr>
+            </tbody>
+          </table>
+</details>
+
+<div id="predictorSection" class="section">
+  <h2>TdP Input Parameters</h2>
+  <div class="predictor-row" style="display:flex;gap:1rem;">
+    <div style="flex:1;">
+      <h3>Predictor 1</h3>
+      <p class="note">
+        Did drug induced arrhythmias occur at any concentration?<br>
+        0=no arrhythmia, 1=type A arrhythmia, 2=any other arrhythmia type
+      </p>
+      <input type="number" id="pred1" name="pred1" min="0" max="2" step="1" required>
+    </div>
+    <div style="flex:1;">
+      <h3>Predictor 4</h3>
+      <p class="note">Maximum repolarization change observed at any concentration (ms)</p>
+      <input type="number" id="pred4" name="pred4" step="any" required>
+    </div>
+    <div style="flex:1;">
+      <h3>Predictor 7</h3>
+      <p class="note">Drug-induced repolarization change at expected Cmax (ms)</p>
+      <input type="number" id="pred7" name="pred7" step="any" required>
+    </div>
+  </div>
+  <button type="submit" id="calcButton">Calculate</button>
+</div>
+
+          <button type="button" onclick="addRow()" class="small-btn">Add row</button>
+        </div>
+        <button type="submit" class="submit-btn">Calculate</button>
+      </form>
+    </section>
+    <section class="description">
+      <h2>Ideal Waveform Parameter Description</h2>
+      <img src="Figure1_SampleWaveform.jpg" style="height:400px; max-width:100%;" alt="Ideal waveform diagram" style="max-width:100%;">
+    </section>
+    <section class="charts">
+      <h2>Program Outputs</h2>
+      <div class="model-panel">
+        <div class="panel-header" style="display:flex; align-items:center; gap:10px;">
+          <h3 id="modelTitle">Model 1 TdP Risk (Logistic Regression)</h3>
+          <button type="button" id="toggleModelBtn" class="small-btn">Switch Model</button>
+        </div>
+        <p id="modelSubtitle">Logistic regression predicting high or low risk.</p>
+        <div id="modelResults"></div>
+        <canvas id="modelChart"></canvas>
+      </div>
+      <div class="chart-block">
+        <h3>Hill Fit Curve</h3>
+        <canvas id="hillPlot"></canvas>
+      </div>
+      <div class="chart-block">
+        <h3>Predicted QT Prolongation Based on Kilfoil Model (Kilfoil et al, 2021)</h3>
+        <p><strong>Notes:</strong> QTc is the estimated compound concentration that induces &gt;10 ms QT prolongation.<br>
+        cAPD<sub>90</sub> is the electrophysiological endpoint measured as corrected APD<sub>90</sub> using the Yamamoto correction.</p>
+        <p><strong>Linear Regression Equation Used:</strong> QTc = 0.92 × cAPD<sub>90</sub> − 0.35</p>
+        <p id="estimatedQTc"></p>
+      </div>
+    </section>
+  </div>
+</body>
+</html>
