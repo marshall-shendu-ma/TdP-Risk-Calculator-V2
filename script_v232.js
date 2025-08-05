@@ -124,6 +124,16 @@ window.onload = function() {
     const allZero = fpdcs.every(f => f === 0);
     const predictor4 = allZero ? 0 : Math.max(...fpdcs);
     const predictor7 = allZero ? 0 : FPD_Cmax;
+    // If no FPD changes, force low risk and alert
+    if (allZero) {
+      alert("The input data indicates no changes in FPD, TdP risk cannot be justified properly.");
+      Prob1 = 0;
+      Prob2a = 0;
+      Prob2b = 0;
+      isModel1 = true;
+      updateModelPanel();
+      return;  // skip further calculations
+    }
     
     // Probabilities using explicit Predictor1 mappings
     const map1  = [0,    0.6583, 1.7944];    // Model 1 intercept offsets
