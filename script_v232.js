@@ -1,4 +1,8 @@
 window.onload = function() {
+  // Bind predictor Calculate button
+document.getElementById('predictorCalc').addEventListener('click', () => {
+    document.getElementById('riskForm').dispatchEvent(new Event('submit', {cancelable:true, bubbles:true}));
+  });
   // Trigger calculate from predictor section
   document.getElementById("predictorCalc").addEventListener("click", () => {
     document.getElementById("riskForm").requestSubmit();
