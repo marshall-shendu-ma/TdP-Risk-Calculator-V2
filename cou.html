@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Context of Use – TdP Risk Categorization Tool</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app">
+    <header style="background-color: rgb(40,124,188); color: white; padding: 20px; margin-bottom: 20px;">
+  <h1 id="coU" style="margin:0; text-transform:none;">
+    Context of Use (CoU)
+  </h1>
+</header>
+    <section>
+      <h2>Context of Use</h2>
+      <p>Delayed ventricular repolarization can create a proarrhythmic environment that results in life-threatening cardiac arrhythmias including Torsades de pointes (TdP). A significant challenge in drug development and regulatory decision making is determining the proarrhythmic potential of novel compounds.</p>
+      <p>The TdP risk categorization calculator tool is used to assess the TdP risk of small molecule compounds in healthy adults to create human-relevant data for greater evidence of safety assurance for drug development and regulatory decision making.</p>
+      <p>Fitting of these results through machine learning algorithms were used to develop this open-source online calculator.</p>
+      <p>This calculator receives compound-induced input predictors:</p>
+      <ol>
+        <li>Predictor 1: Did compound induced arrhythmias occur at any concentration? (0=no arrhythmia, 1=type A arrhythmia, 2=other arrhythmia)</li>
+        <li>Predictor 4: Maximum repolarization change (ms) observed at any concentration.</li>
+        <li>Predictor 7: Drug-induced repolarization change (ms) at Cmax.</li>
+      </ol>
+      <figure>
+        <img src="Figure2_CoU_ArrhythmiaType.jpg" alt="Arrhythmia type traces" style="height:300px; max-width:100%;">
+        <figcaption>Figure 1. Representative Traces of Four Cellular Arrhythmia-Like Events Recorded in hiPSC-CMs Recorded by (left) MEA and (right) VSO platforms. The horizontal scale bar equals 1 s. We refer to type A arrhythmia as a “mild” arrhythmia-like event in the text. (Blinova et al 2018)</figcaption>
+      </figure>
+    </section>
+    <section>
+      <h2>Model Equations</h2>
+      <h3>Model 1:</h3>
+      <p>log(P1/(1−P1)) = Intercept + Predictor1 + Predictor4 + Predictor7</p>
+      <ul>
+        <li>If Predictor1 = 0: log(P1/(1−P1)) = −0.1311 + 0 + 0.00687×ΔΔFPD<sub>c,max</sub> + 0.0232×FPD<sub>c</sub> prolongation.</li>
+        <li>If Predictor1 = 1: log(P1/(1−P1)) = −0.1311 + 0.6583 + 0.00687×ΔΔFPD<sub>c,max</sub> + 0.0232×FPD<sub>c</sub> prolongation.</li>
+        <li>If Predictor1 = 2: log(P1/(1−P1)) = −0.1311 + 1.7944 + 0.00687×ΔΔFPD<sub>c,max</sub> + 0.0232×FPD<sub>c</sub> prolongation.</li>
+      </ul>
+      <h3>Model 2:</h3>
+      <p><strong>Probability of high vs low (P2a):</strong></p>
+      <p>log(P2a/(1−P2a)) = Intercept + Cell Type + Predictor1 + Predictor4 + Predictor7</p>
+      <ul>
+        <li>If Predictor1 = 0: log(P2a/(1−P2a)) = −0.1211 + 0 + 0.00105×ΔΔFPD<sub>c,max</sub> + 0.0338×FPD<sub>c</sub> prolongation.</li>
+        <li>If Predictor1 = 1: log(P2a/(1−P2a)) = −0.1211 + 1.0551 + 0.00105×ΔΔFPD<sub>c,max</sub> + 0.0338×FPD<sub>c</sub> prolongation.</li>
+        <li>If Predictor1 = 2: log(P2a/(1−P2a)) = −0.1211 + 2.1732 + 0.00105×ΔΔFPD<sub>c,max</sub> + 0.0338×FPD<sub>c</sub> prolongation.</li>
+      </ul>
+      <p><strong>Probability of intermediate vs low (P2b):</strong></p>
+      <p>log(P2b/(1−P2b)) = Intercept + Cell Type + Predictor1 + Predictor4 + Predictor7</p>
+      <ul>
+        <li>If Predictor1 = 0: log(P2b/(1−P2b)) = −2.1102 + 0 + 0.00105×ΔΔFPD<sub>c,max</sub> + 0.0338×FPD<sub>c</sub> prolongation.</li>
+        <li>If Predictor1 = 1: log(P2b/(1−P2b)) = −2.1102 + 0.3865 + 0.00105×ΔΔFPD<sub>c,max</sub> + 0.0338×FPD<sub>c</sub> prolongation.</li>
+        <li>If Predictor1 = 2: log(P2b/(1−P2b)) = −2.1102 + 0.8737 + 0.00105×ΔΔFPD<sub>c,max</sub> + 0.0338×FPD<sub>c</sub> prolongation.</li>
+      </ul>
+    </section>
+    <section id="limitations">
+      <h2>Limitations of Use</h2>
+      <ul>
+        <li>Well-exposure analysis was not conducted to measure free drug concentration in hiPSC-CM experiments.</li>
+        <li>The tool does not account for drug metabolites, which should be investigated separately.</li>
+        <li>Repolarization wave changes may be difficult to detect for blunted responses.</li>
+        <li>Only acute (30 min) assay duration was examined; chronic exposures may require verification.</li>
+      </ul>
+    </section>
+    <section>
+      <h2>References</h2>
+      <p>Blinova et al. 2018 PMID: 30257217<br>Patel et al. 2019 PMID: 30912807</p>
+    </section>
+  </div>
+</body>
+</html>
