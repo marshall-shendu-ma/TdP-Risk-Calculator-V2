@@ -82,24 +82,24 @@ document.addEventListener('DOMContentLoaded', function() {
     const title=document.getElementById('modelTitle'),sub=document.getElementById('modelSubtitle'),res=document.getElementById('modelResults');
     let labels,data,colors;
     if(isModel1){
-      title.innerText='Model 1 TdP Risk'; sub.innerHTML='This model uses logistic regression.<br>The model outputs are:';
+      title.innerText='Model 1 TdP Risk'; sub.innerText='This model uses logistic regression.';
       labels=['High/Intermediate TdP Risk Probability','Low TdP Risk Probability'];
       data=[Prob1*100,(1-Prob1)*100];
     } else {
-      title.innerText='Model 2 TdP Risk'; sub.innerHTML='This model uses ordinal regression.<br>The model outputs are:';
+      title.innerText='Model 2 TdP Risk'; sub.innerText='This model uses ordinal regression.';
       labels=['High TdP Risk Probability','Intermediate TdP Risk Probability','Low TdP Risk Probability'];
       data=[Prob2a*100,Prob2b*100,(1-Prob2a-Prob2b)*100];
     }
     colors = labels.map(l => l.includes('High')? 'rgb(230,75,53)' : l.includes('Intermediate')? 'rgb(254,168,9)' : 'rgb(3,160,135)');
-    res.innerHTML = '<ul style="margin-left:20px;">' + labels.map((l,i)=>`<li><strong>${l}:</strong> ${data[i].toFixed(1)}%</li>`).join('') + '</ul>';
+    res.innerHTML = labels.map((l,i)=>`<p><strong>${l}:</strong> ${data[i].toFixed(1)}%</p>`).join('');
     if(modelChart) modelChart.destroy();
     modelChart=new Chart(document.getElementById('modelChart'), {
       type:'bar',
       data:{labels,datasets:[{label:'% Risk',data,backgroundColor:colors}]},
       options:{ 
         scales:{
-          x:{ grid:{lineWidth:5}, ticks:{font:{size:20}} },
-          y:{ beginAtZero:true, max:100, grid:{lineWidth:5}, ticks:{font:{size:20}}}
+          x:{ grid:{lineWidth:5}, ticks:{font:{size:24}} },
+          y:{ beginAtZero:true, max:100, grid:{lineWidth:5}, ticks:{font:{size:24}}}
         },
         plugins:{ legend:{display:false} }
       }
