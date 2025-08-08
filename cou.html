@@ -17,19 +17,34 @@
       <p>Delayed ventricular repolarization can create a proarrhythmic environment that results in life-threatening cardiac arrhythmias including Torsades de pointes (TdP). A significant challenge in drug development and regulatory decision making is determining the proarrhythmic potential of novel compounds.</p>
       <p>The TdP risk categorization calculator tool is used to assess the TdP risk of small molecule compounds in healthy adults to create human-relevant data for greater evidence of safety assurance for drug development and regulatory decision making.</p>
       <p>Fitting of these results through machine learning algorithms were used to develop this open-source online calculator.</p>
-      <p>This calculator receives compound-induced input predictors:</p>
-      <ol>
-        <li>Predictor 1: Did compound induced arrhythmias occur at any concentration? (0=no arrhythmia, 1=type A arrhythmia, 2=other arrhythmia)</li>
-        <li>Predictor 4: Maximum repolarization change (ms) observed at any concentration.</li>
-        <li>Predictor 7: Drug-induced repolarization change (ms) at Cmax.</li>
-      </ol>
+      
+<p>This calculator receives compound-induced input predictors:</p>
+<ul>
+  <li><a href="https://pubmed.ncbi.nlm.nih.gov/30257217/#&gid=article-figures&pid=figure-1-uid-0" target="_blank">Predictor 1, Did compound induced arrhythmias occur at any concentration? (0=no arrhythmia, 1=type A arrhythmia, 2=any other arrhythmia type)</a></li>
+  <li>Predictor 2, Were drug-induced arrhythmias observed at any concentration in ≥ 40% wells. (typically in at least 2 out of 5 replicate wells) (0=no, 1=yes)</li>
+  <li>Predictor 3, Repolarization prolongation (ms) at the first drug concentration with statistically significant (p≤0.05) prolongation or shortening.</li>
+  <li>Predictor 4, Maximum repolarization change (ms) observed at any concentration.</li>
+  <li>Predictor 5, Drug concentration (folds over Cmax) at which the first statistically significant (p≤0.05) repolarization prolongation was first observed.</li>
+  <li>Predictor 6, Drug concentration (folds over Cmax) when drug-induced arrhythmias were first observed.</li>
+  <li>Predictor 7, Drug-induced repolarization change (ms) at Cmax.</li>
+</ul>
+
       <figure>
         <img src="Figure2_CoU_ArrhythmiaType.jpg" alt="Arrhythmia type traces" style="height:300px; max-width:100%;">
-        <figcaption>Figure 1. Representative Traces of Four Cellular Arrhythmia-Like Events Recorded in hiPSC-CMs Recorded by (left) MEA and (right) VSO platforms. The horizontal scale bar equals 1 s. We refer to type A arrhythmia as a “mild” arrhythmia-like event in the text. (Blinova et al 2018)</figcaption>
+        <figcaption>Figure 1. Representative Traces of Four Cellular Arrhythmia-Like Events Recorded in hiPSC-CMs Recorded by (left) MEA and (right) VSO platforms. The horizontal scale bar equals 1 s. We refer to type A arrhythmia as a “mild” arrhythmia-like event in the text. (Blinova et al 2018)</figcaption><p>And provides as outputs:<br>
+TdP risk categorization estimated from in vitro experiments on hiPSC-CMs<br>
+<b>Model 1:</b><br>
+1. Low TdP Risk probability estimation<br>
+2. High or intermediate TdP risk probability estimation<br>
+<b>Model 2:</b><br>
+1. Low TdP Risk probability estimation<br>
+2. Intermediate TdP risk probability estimation<br>
+3. High TdP risk probability estimation</p>
+
       </figure>
     </section>
     <section>
-      <h2>Model Equations</h2>
+      <h2>Formulas for TdP risk categorization estimation</h2>
       <h3>Model 1:</h3>
       <p>log(P1/(1−P1)) = Intercept + Predictor1 + Predictor4 + Predictor7</p>
       <ul>
@@ -53,22 +68,30 @@
         <li>If Predictor1 = 2: log(P2b/(1−P2b)) = −2.1102 + 0.8737 + 0.00105×ΔΔFPD<sub>c,max</sub> + 0.0338×FPD<sub>c</sub> prolongation.</li>
       </ul>
     </section>
-    <section id="limitations">
-      <h2>Limitations of Use</h2>
-      <ul>
-        <li>Well-exposure analysis was not conducted to measure free drug concentration in hiPSC-CM experiments.</li>
-        <li>The tool does not account for drug metabolites, which should be investigated separately.</li>
-        <li>Repolarization wave changes may be difficult to detect for blunted responses.</li>
-        <li>Only acute (30 min) assay duration was examined; chronic exposures may require verification.</li>
-      </ul>
-    </section>
+    
+<section id="limitations">
+  <h2>Limitations of Use</h2>
+  <p>While this study provides valuable insight into potential TdP risk categories it has some limitations described here (Blinova et al 2018).</p>
+  <ol>
+    <li>Well-exposure analysis studies were not conducted to measure free drug concentration in hiPSC-CM experiments. Future studies should consider detailed well-exposure analysis to determine the amount of nonspecific binding.</li>
+    <li>The tool does not account for drug metabolites as such active drug metabolites should be investigated independently.</li>
+    <li>Repolarization wave can be decreased (blunted) following exposure to some compounds making it challenging to detect FPD prolongation.</li>
+    <li>Only acute (30 minutes) assay duration was investigated. However, chronic timepoints (e.g., days to weeks) may be of interest for specific compounds (e.g., hERG trafficking inhibitors).</li>
+    <li>This study was not statistically powered to investigate the effect of the electrophysiological device (platform) on the hiPSC-CM assay’s predictivity of proarrhythmic drug potential.</li>
+    <li>This study was conducted on spontaneous beating (non-paced) hiPSC-CMs. Utilization of field stimulated (paced) input parameters (Patel et al 2019) will require additional verification and validation.</li>
+    <li>To extend this tool to more complex in vitro models (e.g., co-culture, 3D, disease models) specific verification, validation and optimization will be required.</li>
+    <li>This model was validated for two commercially available models iCell cardiomyocytes2 and Cor.4U cardiomyocytes. Utilization of additional hiPSC-CM models will require additional verification and validation.</li>
+    <li>Best practices recommendations suggest inclusion of the predicted Cmax in the selection of drug concentrations to determine Predictor 7. Extrapolation of Predictor 7 may confound TdP risk categorization outputs.</li>
+  </ol>
+</section>
+
     <section>
-      \1
-      <ul>
-        <li><a href="https://pubmed.ncbi.nlm.nih.gov/30257217/" target="_blank">Blinova et al. 2018 PMID: 30257217</a></li>
-        <li><a href="https://pubmed.ncbi.nlm.nih.gov/30912807/" target="_blank">Patel et al. 2019 PMID: 30912807</a></li>
-      </ul>
-    </section>
+  <h2>References</h2>
+  <ul>
+    <li><a href="https://pubmed.ncbi.nlm.nih.gov/30257217/" target="_blank">Blinova et al. 2018 PMID: 30257217</a></li>
+    <li><a href="https://pubmed.ncbi.nlm.nih.gov/30912807/" target="_blank">Patel et al. 2019 PMID: 30912807</a></li>
+  </ul>
+</section>
   </div>
 </body>
 </html>
