@@ -16,22 +16,6 @@ document.addEventListener('DOMContentLoaded', function() {
     else{hillContent.style.display='none';hillHeader.textContent='▸ Hill Fit Curve (only available when input is filled in Cmax Extrapolation)';}
   });
 
-  // QT collapse
-  const qtHeader = document.getElementById('qtSectionHeader'),
-        qtContent = document.getElementById('qtSectionContent');
-  if (qtHeader && qtContent) {
-    qtHeader.addEventListener('click', () => {
-      if (qtContent.style.display === 'none') {
-        qtContent.style.display = '';
-        qtHeader.textContent = '▾ QT Prolongation Prediction (in progress)';
-      } else {
-        qtContent.style.display = 'none';
-        qtHeader.textContent = '▸ QT Prolongation Prediction (in progress)';
-      }
-    });
-  }
-
-
   // switch unit
   document.getElementById('switchCmaxUnit').addEventListener('click',()=>{
     const inp=document.getElementById('cmax'), lbl=document.getElementById('cmaxLabel');
