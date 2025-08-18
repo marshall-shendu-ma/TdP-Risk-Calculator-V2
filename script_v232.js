@@ -8,31 +8,15 @@ document.addEventListener('DOMContentLoaded', function() {
         hillHeader=document.getElementById('hillSectionHeader'),
         hillContent=document.getElementById('hillSectionContent');
   cmaxHeader.addEventListener('click',()=>{
-    if(cmaxContent.style.display==='none'){cmaxContent.style.display='';cmaxHeader.textContent='▾ Cmax Extrapolation';}
-    else{cmaxContent.style.display='none';cmaxHeader.textContent='▸ Cmax Extrapolation';}
+    if(cmaxContent.style.display==='none'){cmaxContent.style.display='';cmaxHeader.textContent='▾ Cmax Interpolation';}
+    else{cmaxContent.style.display='none';cmaxHeader.textContent='▸ Cmax Interpolation';}
   });
   hillHeader.addEventListener('click',()=>{
-    if(hillContent.style.display==='none'){hillContent.style.display='';hillHeader.textContent='▾ Hill Fit Curve (only available when input is filled in Cmax Extrapolation)';}
-    else{hillContent.style.display='none';hillHeader.textContent='▸ Hill Fit Curve (only available when input is filled in Cmax Extrapolation)';}
+    if(hillContent.style.display==='none'){hillContent.style.display='';hillHeader.textContent='▾ Hill Fit Curve (only available when input is filled in Cmax Interpolation)';}
+    else{hillContent.style.display='none';hillHeader.textContent='▸ Hill Fit Curve (only available when input is filled in Cmax Interpolation)';}
   });
 
-  // QT collapse
-  const qtHeader = document.getElementById('qtSectionHeader'),
-        qtContent = document.getElementById('qtSectionContent');
-  if (qtHeader && qtContent) {
-    qtHeader.addEventListener('click', () => {
-      if (qtContent.style.display === 'none') {
-        qtContent.style.display = '';
-        qtHeader.textContent = '▾ QT Prolongation Prediction (in progress)';
-      } else {
-        qtContent.style.display = 'none';
-        qtHeader.textContent = '▸ QT Prolongation Prediction (in progress)';
-      }
-    });
-  }
-
-
-  // switch unit
+    // switch unit
   document.getElementById('switchCmaxUnit').addEventListener('click',()=>{
     const inp=document.getElementById('cmax'), lbl=document.getElementById('cmaxLabel');
     let v=parseFloat(inp.value); if(isNaN(v))return;
@@ -75,7 +59,6 @@ document.addEventListener('DOMContentLoaded', function() {
       if(p4===0&&p7===0){alert('No drug-induced repolarization changes based on your Predictor Inputs. TdP risk cannot be justified.');}
       const Thr=assay==='30'?Bottom*1.103:Bottom*1.0794;
       const logM=assay==='30'?(Thr+0.35)/0.92:(Thr+0.17)/0.93;
-      document.getElementById('estimatedQTc').innerHTML=`<strong>QTc (log M):</strong> ${logM.toFixed(4)}<br><strong>Conc >10ms QT:</strong> ${Math.pow(10,logM).toFixed(4)} µM`;
       const fitX=Array.from({length:100},(_,i)=>Math.pow(10,Math.log10(Math.max(0.001,Math.min(...concs)))+i*(Math.log10(Math.max(...concs))-Math.log10(Math.max(0.001,Math.min(...concs))))/99));
       const fitY=fitX.map(x=>hillf(x,best));
       if(hillChart)hillChart.destroy();
