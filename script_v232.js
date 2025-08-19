@@ -82,7 +82,7 @@ document.addEventListener('DOMContentLoaded', function() {
     let labels,data,colors;
     if(isModel1){
       title.innerText='Model 1 TdP Risk'; sub.innerHTML='This model uses logistic regression.<br>The model outputs are:';
-      labels=['High or Intermediate TdP Risk Probability','Low TdP Risk Probability'];
+      labels=['High/Intermediate TdP Risk Probability','Low TdP Risk Probability'];
       data=[Prob1*100,(1-Prob1)*100];
     } else {
       title.innerText='Model 2 TdP Risk'; sub.innerHTML='This model uses ordinal regression.<br>The model outputs are:';
@@ -92,9 +92,10 @@ document.addEventListener('DOMContentLoaded', function() {
     colors = labels.map(l => l.includes('High')? 'rgb(230,75,53)' : l.includes('Intermediate')? 'rgb(254,168,9)' : 'rgb(3,160,135)');
     res.innerHTML = '<ul style="margin-left:20px;">' + labels.map((l,i)=>`<li><strong>${l}:</strong> ${data[i].toFixed(1)}%</li>`).join('') + '</ul>';
     if(modelChart) modelChart.destroy();
-    
-modelChart=new Chart(document.getElementById('modelChart'), {  type:'bar',  data:{labels,datasets:[    {label:'% Risk',data,backgroundColor:colors}]},
-      options:{  
+    modelChart=new Chart(document.getElementById('modelChart'), {
+      type:'bar',
+      data:{labels,datasets:[{label:'% Risk',data,backgroundColor:colors}]},
+      options:{ 
         scales:{
           x:{ grid:{lineWidth:5}, ticks:{font:{size:20}} },
           y:{ beginAtZero:true, max:100, grid:{lineWidth:5}, ticks:{font:{size:20}}}
@@ -102,34 +103,5 @@ modelChart=new Chart(document.getElementById('modelChart'), {  type:'bar',  data
         plugins:{ legend:{display:false} }
       }
     });
-// --- Add 80% threshold line AFTER the bar chart is rendered (keeps V3.21 behavior, but on top)
-let __thresholdPlotted=false;
-function __addThreshold(){
-  if(__thresholdPlotted||!modelChart) return;
-  const lbls = (modelChart.data && modelChart.data.labels) ? modelChart.data.labels : [];
-  const lineDs = {
-    type:'line', label:'80% threshold',
-    data: lbls.map(()=>80),
-    borderColor:'red', borderWidth:5, borderDash:[6,6],
-    pointRadius:0, fill:false,
-    xAxisID:'x', yAxisID:'y', order:999
-  };
-  modelChart.data.datasets.push(lineDs);
-  __thresholdPlotted=true;
-  try{ modelChart.update(); }catch(e){}
-}
-// Hook into animation completion so the line draws on top of bars
-try{
-  if(!modelChart.options) modelChart.options = {};
-  if(!modelChart.options.animation) modelChart.options.animation = {};
-  const __prev = modelChart.options.animation.onComplete;
-  modelChart.options.animation.onComplete = function(){
-    try{ if(typeof __prev==='function'){ __prev(); } }catch(e){}
-    __addThreshold();
-  };
-}catch(e){}
-// Fallback: queue a microtask as a backup to ensure the line appears
-setTimeout(__addThreshold, 0);
-
   }
 });
