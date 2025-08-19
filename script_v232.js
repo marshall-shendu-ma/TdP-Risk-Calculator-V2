@@ -93,7 +93,7 @@ document.addEventListener('DOMContentLoaded', function() {
     res.innerHTML = '<ul style="margin-left:20px;">' + labels.map((l,i)=>`<li><strong>${l}:</strong> ${data[i].toFixed(1)}%</li>`).join('') + '</ul>';
     if(modelChart) modelChart.destroy();
     modelChart=new Chart(document.getElementById('modelChart'), {  type:'bar',  data:{labels,datasets:[    {label:'% Risk',data,backgroundColor:colors}]},
-      options:{ plugins:{annotation:{annotations:{line1:{type:'line',yMin:80,yMax:80,borderColor:'red',borderWidth:4,borderDash:[6,6]}}}}, 
+      options:{  
         scales:{
           x:{ grid:{lineWidth:5}, ticks:{font:{size:20}} },
           y:{ beginAtZero:true, max:100, grid:{lineWidth:5}, ticks:{font:{size:20}}}
