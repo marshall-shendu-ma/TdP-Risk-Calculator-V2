@@ -92,14 +92,52 @@ document.addEventListener('DOMContentLoaded', function() {
     colors = labels.map(l => l.includes('High')? 'rgb(230,75,53)' : l.includes('Intermediate')? 'rgb(254,168,9)' : 'rgb(3,160,135)');
     res.innerHTML = '<ul style="margin-left:20px;">' + labels.map((l,i)=>`<li><strong>${l}:</strong> ${data[i].toFixed(1)}%</li>`).join('') + '</ul>';
     if(modelChart) modelChart.destroy();
-    modelChart=new Chart(document.getElementById('modelChart'), {  type:'bar',  data:{labels,datasets:[    {label:'% Risk',data,backgroundColor:colors},    {type:'line',label:'80% threshold',data:labels.map(()=>80),borderColor:'red',borderWidth:5,borderDash:[6,6],pointRadius:0,fill:false}  ]},
-      options:{ plugins:{annotation:{annotations:{line1:{type:'line',yMin:80,yMax:80,borderColor:'red',borderWidth:5,borderDash:[6,6]}}}}, 
-        scales:{
-          x:{ grid:{lineWidth:5}, ticks:{font:{size:20}} },
-          y:{ beginAtZero:true, max:100, grid:{lineWidth:5}, ticks:{font:{size:20}}}
-        },
-        plugins:{ legend:{display:false} }
-      }
-    });
+    
+if(isModel1){
+  modelChart=new Chart(document.getElementById('modelChart'), {  
+    type:'bar',  
+    data:{labels,datasets:[    
+      {label:'% Risk',data,backgroundColor:colors}
+    ]},
+    options:{ 
+      plugins:{annotation:{annotations:{
+        thresholdLine:{
+          type:'line',
+          yMin:80,yMax:80,
+          borderColor:'red',
+          borderWidth:5,
+          borderDash:[6,6],
+          label:{
+            enabled:true,
+            content:'Risk Probability Threshold',
+            position:'end',
+            color:'red',
+            font:{style:'bold'}
+          }
+        }
+      }}},
+      scales:{
+        x:{ grid:{lineWidth:5}, ticks:{font:{size:20}} },
+        y:{ beginAtZero:true, max:100, grid:{lineWidth:5}, ticks:{font:{size:20}}}
+      },
+      plugins:{ legend:{display:false} }
+    }
+  });
+} else {
+  modelChart=new Chart(document.getElementById('modelChart'), {  
+    type:'bar',  
+    data:{labels,datasets:[    
+      {label:'% Risk',data,backgroundColor:colors}
+    ]},
+    options:{ 
+      scales:{
+        x:{ grid:{lineWidth:5}, ticks:{font:{size:20}} },
+        y:{ beginAtZero:true, max:100, grid:{lineWidth:5}, ticks:{font:{size:20}}}
+      },
+      plugins:{ legend:{display:false} }
+    }
+  });
+}
+
   }
 });
