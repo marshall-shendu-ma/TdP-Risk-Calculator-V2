@@ -1,4 +1,5 @@
 document.addEventListener('DOMContentLoaded', function() {
+  try{ if(window['chartjs-plugin-annotation']||window.ChartAnnotation){ Chart.register(window['chartjs-plugin-annotation']||window.ChartAnnotation); } }catch(e){}
   let hillChart, modelChart, isModel1 = true;
   let Prob1=0, Prob2a=0, Prob2b=0, cmaxIsNM=false;
 
@@ -92,51 +93,14 @@ document.addEventListener('DOMContentLoaded', function() {
     colors = labels.map(l => l.includes('High')? 'rgb(230,75,53)' : l.includes('Intermediate')? 'rgb(254,168,9)' : 'rgb(3,160,135)');
     res.innerHTML = '<ul style="margin-left:20px;">' + labels.map((l,i)=>`<li><strong>${l}:</strong> ${data[i].toFixed(1)}%</li>`).join('') + '</ul>';
     if(modelChart) modelChart.destroy();
-    
-modelChart=new Chart(document.getElementById('modelChart'), {
-  type:'bar',
-  data:(()=>{
-    const ds=[{label:'% Risk',data,backgroundColor:colors}];
-    if(isModel1){
-      // Plot the threshold line AFTER bars so it draws above them
-      ds.push({type:'line',label:'80% threshold',data:labels.map(()=>80),
-               borderColor:'red',borderWidth:5,borderDash:[6,6],pointRadius:0,fill:false});
-    }
-    return {labels,datasets:ds};
-  })(),
-  options:(()=>{
-    const baseOpts={
-      scales:{
-        x:{ grid:{lineWidth:5}, ticks:{font:{size:20}} },
-        y:{ beginAtZero:true, max:100, grid:{lineWidth:5}, ticks:{font:{size:20}} }
-      },
-      plugins:{ legend:{display:false} }
-    };
-    if(isModel1){
-      // Add a full-width annotation so the line clearly intercepts the Y-axis,
-      // and attach a visible label rendered last.
-      baseOpts.plugins.annotation = {
-        annotations:{
-          riskThresh:{
-            type:'line',
-            yMin:80, yMax:80,
-            borderColor:'red',
-            borderWidth:5,
-            borderDash:[6,6],
-            label:{
-              display:true,
-              content:'Risk Probability Threshold',
-              color:'red',
-              position:'end',
-              backgroundColor:'rgba(255,255,255,0.0)'
-            }
-          }
-        }
-      };
-    }
-    return baseOpts;
-  })()
-});
-}
-
+    modelChart=new Chart(document.getElementById('modelChart'), {  type:'bar',  data:{labels,datasets:[    {label:'% Risk',data,backgroundColor:colors},    {type:'line',label:'80% threshold',data:labels.map(()=>80),borderColor:'red',borderWidth:5,borderDash:[6,6],pointRadius:0,fill:false}  ]},
+      options:{ plugins:{annotation:{annotations:{line1:{type:'line',yMin:80,yMax:80,borderColor:'red',borderWidth:5,borderDash:[6,6]}}}}, 
+        scales:{
+          x:{ grid:{lineWidth:5}, ticks:{font:{size:20}} },
+          y:{ beginAtZero:true, max:100, grid:{lineWidth:5}, ticks:{font:{size:20}}}
+        },
+        plugins:{ legend:{display:false} }
+      }
+    });
+  }
 });
