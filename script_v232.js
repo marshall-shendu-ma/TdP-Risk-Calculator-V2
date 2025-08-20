@@ -95,9 +95,17 @@ document.addEventListener('DOMContentLoaded', function() {
     
 modelChart=new Chart(document.getElementById('modelChart'), {
   type:'bar',
-  data:{ labels, datasets:[ { label:'% Risk', data, backgroundColor:colors } ] },
+  data:(()=>{
+    const ds=[{label:'% Risk',data,backgroundColor:colors}];
+    if(isModel1){
+      // Plot the threshold line AFTER bars so it draws above them
+      ds.push({type:'line',label:'80% threshold',data:labels.map(()=>80),
+               borderColor:'red',borderWidth:5,borderDash:[6,6],pointRadius:0,fill:false});
+    }
+    return {labels,datasets:ds};
+  })(),
   options:(()=>{
-    const baseOpts = {
+    const baseOpts={
       scales:{
         x:{ grid:{lineWidth:5}, ticks:{font:{size:20}} },
         y:{ beginAtZero:true, max:100, grid:{lineWidth:5}, ticks:{font:{size:20}} }
@@ -105,6 +113,8 @@ modelChart=new Chart(document.getElementById('modelChart'), {
       plugins:{ legend:{display:false} }
     };
     if(isModel1){
+      // Add a full-width annotation so the line clearly intercepts the Y-axis,
+      // and attach a visible label rendered last.
       baseOpts.plugins.annotation = {
         annotations:{
           riskThresh:{
@@ -114,11 +124,11 @@ modelChart=new Chart(document.getElementById('modelChart'), {
             borderWidth:5,
             borderDash:[6,6],
             label:{
-              enabled:true,
+              display:true,
               content:'Risk Probability Threshold',
               color:'red',
               position:'end',
-              font:{style:'bold'}
+              backgroundColor:'rgba(255,255,255,0.0)'
             }
           }
         }
@@ -128,4 +138,5 @@ modelChart=new Chart(document.getElementById('modelChart'), {
   })()
 });
 }
+
 });
