@@ -35,7 +35,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
   // switch unit
-  document.getElementById('switchCmaxUnit').addEventListener('click',()=>{const inp=document.getElementById('cmax'), lbl=document.getElementById('cmaxLabel');let v=parseFloat(inp.value); if(isNaN(v))return;if(cmaxIsNM){v/=1000;lbl.innerHTML='Cmax (<span class="plain-greek">µ</span>M)';const ch=document.getElementById('concHeader'); if(ch) ch.innerHTML='Concentration (<span class="plain-greek">µ</span>M)';}else{v*=1000;lbl.innerText='Cmax (nM)'; const ch=document.getElementById('concHeader'); if(ch) ch.innerText='Concentration (nM)';}inp.value=v.toFixed(4); cmaxIsNM=!cmaxIsNM;});
+  document.getElementById('switchCmaxUnit').addEventListener('click',()=>{
+    const inp=document.getElementById('cmax'), lbl=document.getElementById('cmaxLabel');
+    let v=parseFloat(inp.value); if(isNaN(v))return;
+    if(cmaxIsNM){v/=1000;lbl.innerText='Cmax (µM)';}else{v*=1000;lbl.innerText='Cmax (nM)';}
+    inp.value=v.toFixed(4); cmaxIsNM=!cmaxIsNM;
+  });
 
   window.addRow=()=>{const tb=document.getElementById('dataBody'),r=document.createElement('tr');r.innerHTML='<td><input name="concentration[]" type="number" step="any" required></td><td><input name="fpdc[]" type="number" step="any" required></td><td><button type="button" onclick="removeRow(this)">−</button></td>';tb.appendChild(r);};
   window.removeRow=btn=>btn.closest('tr').remove();
@@ -50,7 +55,7 @@ document.addEventListener('DOMContentLoaded', function() {
       arr=parseInt(document.getElementById('predictor1').value);
       p4=parseFloat(document.getElementById('predictor4').value);
       p7=parseFloat(document.getElementById('predictor7').value);
-      if(isNaN(arr)||isNaN(p4)||isNaN(p7)){alert('Fill predictors');return;}const c=document.getElementById('cmax'); if(c) c.value='';document.querySelectorAll('#dataBody input').forEach(el=>el.value='');
+      if(isNaN(arr)||isNaN(p4)||isNaN(p7)){alert('Fill predictors');return;}
       if(p4===0&&p7===0){alert('No drug-induced repolarization changes based on your Predictor Inputs. TdP risk cannot be justified.');}
     } else {
       Cmax=parseFloat(document.getElementById('cmax').value);
@@ -68,11 +73,11 @@ document.addEventListener('DOMContentLoaded', function() {
       let best={...guess},minE=Infinity;
       const loss=p=>fpdcs.reduce((s,y,i)=>s+Math.pow(hillf(concs[i],p)-y,2),0);
       for(let h=0.1;h<=5;h+=0.1)for(let ec=0.01;ec<=Math.max(...concs)*10;ec+=0.1){const t={...guess,EC50:ec,Hill:h},e=loss(t);if(e<minE){minE=e;best=t;} }
-      const FPDc=hillf(Cmax||0.01,best);p7=FPDc;document.getElementById('predictor1').value=String(arr);document.getElementById('predictor4').value=isFinite(p4)?Number(p4).toFixed(4):'';document.getElementById('predictor7').value=isFinite(p7)?Number(p7).toFixed(4):'';
+      const FPDc=hillf(Cmax||0.01,best);p7=FPDc;
       if(p4===0&&p7===0){alert('No drug-induced repolarization changes based on your Predictor Inputs. TdP risk cannot be justified.');}
       const Thr=assay==='30'?Bottom*1.103:Bottom*1.0794;
       const logM=assay==='30'?(Thr+0.35)/0.92:(Thr+0.17)/0.93;
-      document.getElementById('estimatedQTc').innerHTML=`<strong>QTc (log M):</strong> ${logM.toFixed(4)}<br><strong>Conc >10ms QT:</strong> ${Math.pow(10,logM).toFixed(4)} µM`;
+      (()=>{const el=document.getElementById('estimatedQTc'); if(el) el.innerHTML =`<strong>QTc (log M):</strong> ${logM.toFixed(4)}<br><strong>Conc >10ms QT:</strong> ${Math.pow(10,logM).toFixed(4)} µM`;
       const fitX=Array.from({length:100},(_,i)=>Math.pow(10,Math.log10(Math.max(0.001,Math.min(...concs)))+i*(Math.log10(Math.max(...concs))-Math.log10(Math.max(0.001,Math.min(...concs))))/99));
       const fitY=fitX.map(x=>hillf(x,best));
       if(hillChart)hillChart.destroy();
