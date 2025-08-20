@@ -93,51 +93,39 @@ document.addEventListener('DOMContentLoaded', function() {
     res.innerHTML = '<ul style="margin-left:20px;">' + labels.map((l,i)=>`<li><strong>${l}:</strong> ${data[i].toFixed(1)}%</li>`).join('') + '</ul>';
     if(modelChart) modelChart.destroy();
     
-if(isModel1){
-  modelChart=new Chart(document.getElementById('modelChart'), {  
-    type:'bar',  
-    data:{labels,datasets:[    
-      {label:'% Risk',data,backgroundColor:colors}
-    ]},
-    options:{ 
-      plugins:{annotation:{annotations:{
-        thresholdLine:{
-          type:'line',
-          yMin:80,yMax:80,
-          borderColor:'red',
-          borderWidth:5,
-          borderDash:[6,6],
-          label:{
-            enabled:true,
-            content:'Risk Probability Threshold',
-            position:'end',
-            color:'red',
-            font:{style:'bold'}
+modelChart=new Chart(document.getElementById('modelChart'), {
+  type:'bar',
+  data:{ labels, datasets:[ { label:'% Risk', data, backgroundColor:colors } ] },
+  options:(()=>{
+    const baseOpts = {
+      scales:{
+        x:{ grid:{lineWidth:5}, ticks:{font:{size:20}} },
+        y:{ beginAtZero:true, max:100, grid:{lineWidth:5}, ticks:{font:{size:20}} }
+      },
+      plugins:{ legend:{display:false} }
+    };
+    if(isModel1){
+      baseOpts.plugins.annotation = {
+        annotations:{
+          riskThresh:{
+            type:'line',
+            yMin:80, yMax:80,
+            borderColor:'red',
+            borderWidth:5,
+            borderDash:[6,6],
+            label:{
+              enabled:true,
+              content:'Risk Probability Threshold',
+              color:'red',
+              position:'end',
+              font:{style:'bold'}
+            }
           }
         }
-      }}},
-      scales:{
-        x:{ grid:{lineWidth:5}, ticks:{font:{size:20}} },
-        y:{ beginAtZero:true, max:100, grid:{lineWidth:5}, ticks:{font:{size:20}}}
-      },
-      plugins:{ legend:{display:false} }
+      };
     }
-  });
-} else {
-  modelChart=new Chart(document.getElementById('modelChart'), {  
-    type:'bar',  
-    data:{labels,datasets:[    
-      {label:'% Risk',data,backgroundColor:colors}
-    ]},
-    options:{ 
-      scales:{
-        x:{ grid:{lineWidth:5}, ticks:{font:{size:20}} },
-        y:{ beginAtZero:true, max:100, grid:{lineWidth:5}, ticks:{font:{size:20}}}
-      },
-      plugins:{ legend:{display:false} }
-    }
-  });
+    return baseOpts;
+  })()
+});
 }
-
-  }
 });
