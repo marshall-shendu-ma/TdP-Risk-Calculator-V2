@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', function() {
-  try{ if(window['chartjs-plugin-annotation']||window.ChartAnnotation){ Chart.register(window['chartjs-plugin-annotation']||window.ChartAnnotation); } }catch(e){}
+  try{ if(window.ChartAnnotation){ Chart.register(window.ChartAnnotation); } }catch(e){}
 
   let hillChart, modelChart, isModel1 = true;
   let Prob1=0, Prob2a=0, Prob2b=0, cmaxIsNM=false;
