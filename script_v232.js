@@ -72,7 +72,7 @@ document.addEventListener('DOMContentLoaded', function() {
       if(p4===0&&p7===0){alert('No drug-induced repolarization changes based on your Predictor Inputs. TdP risk cannot be justified.');}
       const Thr=assay==='30'?Bottom*1.103:Bottom*1.0794;
       const logM=assay==='30'?(Thr+0.35)/0.92:(Thr+0.17)/0.93;
-      (()=>{const el=document.getElementById('estimatedQTc'); if(el){ el.innerHTML=`<strong>QTc (log M):</strong> ${logM.toFixed(4)}<br><strong>Conc >10ms QT:</strong> ${Math.pow(10,logM).toFixed(4)} µM`; }})();
+      document.getElementById('estimatedQTc').innerHTML=`<strong>QTc (log M):</strong> ${logM.toFixed(4)}<br><strong>Conc >10ms QT:</strong> ${Math.pow(10,logM).toFixed(4)} µM`;
       const fitX=Array.from({length:100},(_,i)=>Math.pow(10,Math.log10(Math.max(0.001,Math.min(...concs)))+i*(Math.log10(Math.max(...concs))-Math.log10(Math.max(0.001,Math.min(...concs))))/99));
       const fitY=fitX.map(x=>hillf(x,best));
       if(hillChart)hillChart.destroy();
