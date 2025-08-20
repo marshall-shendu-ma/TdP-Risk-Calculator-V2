@@ -10,12 +10,12 @@ document.addEventListener('DOMContentLoaded', function() {
         hillHeader=document.getElementById('hillSectionHeader'),
         hillContent=document.getElementById('hillSectionContent');
   cmaxHeader.addEventListener('click',()=>{
-    if(cmaxContent.style.display==='none'){cmaxContent.style.display='';cmaxHeader.textContent='▾ Cmax Extrapolation';}
-    else{cmaxContent.style.display='none';cmaxHeader.textContent='▸ Cmax Extrapolation';}
+    if(cmaxContent.style.display==='none'){cmaxContent.style.display='';cmaxHeader.textContent='▾ Cmax Interpolation';}
+    else{cmaxContent.style.display='none';cmaxHeader.textContent='▸ Cmax Interpolation';}
   });
   hillHeader.addEventListener('click',()=>{
-    if(hillContent.style.display==='none'){hillContent.style.display='';hillHeader.textContent='▾ Hill Fit Curve (only available when input is filled in Cmax Extrapolation)';}
-    else{hillContent.style.display='none';hillHeader.textContent='▸ Hill Fit Curve (only available when input is filled in Cmax Extrapolation)';}
+    if(hillContent.style.display==='none'){hillContent.style.display='';hillHeader.textContent='▾ Hill Fit Curve (only available when input is filled in Cmax Interpolation)';}
+    else{hillContent.style.display='none';hillHeader.textContent='▸ Hill Fit Curve (only available when input is filled in Cmax Interpolation)';}
   });
 
   // QT collapse
@@ -72,11 +72,11 @@ document.addEventListener('DOMContentLoaded', function() {
       if(p4===0&&p7===0){alert('No drug-induced repolarization changes based on your Predictor Inputs. TdP risk cannot be justified.');}
       const Thr=assay==='30'?Bottom*1.103:Bottom*1.0794;
       const logM=assay==='30'?(Thr+0.35)/0.92:(Thr+0.17)/0.93;
-      document.getElementById('estimatedQTc').innerHTML=`<strong>QTc (log M):</strong> ${logM.toFixed(4)}<br><strong>Conc >10ms QT:</strong> ${Math.pow(10,logM).toFixed(4)} µM`;
+      (()=>{const el=document.getElementById('estimatedQTc'); if(el){ el.innerHTML=`<strong>QTc (log M):</strong> ${logM.toFixed(4)}<br><strong>Conc >10ms QT:</strong> ${Math.pow(10,logM).toFixed(4)} µM`; }})();
       const fitX=Array.from({length:100},(_,i)=>Math.pow(10,Math.log10(Math.max(0.001,Math.min(...concs)))+i*(Math.log10(Math.max(...concs))-Math.log10(Math.max(0.001,Math.min(...concs))))/99));
       const fitY=fitX.map(x=>hillf(x,best));
       if(hillChart)hillChart.destroy();
-      hillChart=new Chart(document.getElementById('hillPlot'),{type:'line',data:{labels:fitX,datasets:[{label:'Hill Fit',data:fitX.map((x,i)=>({x,y:fitY[i]})),borderWidth:3,fill:false},{label:'Data',type:'scatter',data:concs.map((x,i)=>({x,y:fpdcs[i]})),pointRadius:4},{label:'Cmax',type:'scatter',data:[{x:Cmax,y:FPDc}],pointRadius:6}]},options:{scales:{x:{type:'logarithmic'},y:{}}}});
+      hillChart=new Chart(document.getElementById('hillPlot'),{type:'line',data:{labels:fitX,datasets:[{label:'Hill Fit',data:fitX.map((x,i)=>({x,y:fitY[i]})),borderWidth:3,fill:false},{label:'Data',type:'scatter',data:concs.map((x,i)=>({x,y:fpdcs[i]})),pointRadius:4},{label:'Cmax',type:'scatter',data:[{x:Cmax,y:FPDc}],pointRadius:6}]},options:{scales:{x:{type:'logarithmic', grid:{lineWidth:5}, ticks:{font:{size:20}}, title:{display:true, text:'Concentration (µM)', font:{size:18}}},y:{grid:{lineWidth:5}, ticks:{font:{size:20}}, title:{display:true, text:'ΔΔFPDc (ms)', font:{size:18}}}}}});
     }
     // model probabilities
     const map1=[0,0.6583,1.7944],map2a=[0,1.0551,2.1732],map2b=[0,0.3865,0.8737];
