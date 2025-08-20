@@ -1,5 +1,4 @@
 document.addEventListener('DOMContentLoaded', function() {
-  try{ if(window['chartjs-plugin-annotation']||window.ChartAnnotation){ Chart.register(window['chartjs-plugin-annotation']||window.ChartAnnotation); } }catch(e){}
   let hillChart, modelChart, isModel1 = true;
   let Prob1=0, Prob2a=0, Prob2b=0, cmaxIsNM=false;
 
@@ -9,15 +8,31 @@ document.addEventListener('DOMContentLoaded', function() {
         hillHeader=document.getElementById('hillSectionHeader'),
         hillContent=document.getElementById('hillSectionContent');
   cmaxHeader.addEventListener('click',()=>{
-    if(cmaxContent.style.display==='none'){cmaxContent.style.display='';cmaxHeader.textContent='▾ Cmax Interpolation';}
-    else{cmaxContent.style.display='none';cmaxHeader.textContent='▸ Cmax Interpolation';}
+    if(cmaxContent.style.display==='none'){cmaxContent.style.display='';cmaxHeader.textContent='▾ Cmax Extrapolation';}
+    else{cmaxContent.style.display='none';cmaxHeader.textContent='▸ Cmax Extrapolation';}
   });
   hillHeader.addEventListener('click',()=>{
-    if(hillContent.style.display==='none'){hillContent.style.display='';hillHeader.textContent='▾ Hill Fit Curve (only available when input is filled in Cmax Interpolation)';}
-    else{hillContent.style.display='none';hillHeader.textContent='▸ Hill Fit Curve (only available when input is filled in Cmax Interpolation)';}
+    if(hillContent.style.display==='none'){hillContent.style.display='';hillHeader.textContent='▾ Hill Fit Curve (only available when input is filled in Cmax Extrapolation)';}
+    else{hillContent.style.display='none';hillHeader.textContent='▸ Hill Fit Curve (only available when input is filled in Cmax Extrapolation)';}
   });
 
-    // switch unit
+  // QT collapse
+  const qtHeader = document.getElementById('qtSectionHeader'),
+        qtContent = document.getElementById('qtSectionContent');
+  if (qtHeader && qtContent) {
+    qtHeader.addEventListener('click', () => {
+      if (qtContent.style.display === 'none') {
+        qtContent.style.display = '';
+        qtHeader.textContent = '▾ QT Prolongation Prediction (in progress)';
+      } else {
+        qtContent.style.display = 'none';
+        qtHeader.textContent = '▸ QT Prolongation Prediction (in progress)';
+      }
+    });
+  }
+
+
+  // switch unit
   document.getElementById('switchCmaxUnit').addEventListener('click',()=>{
     const inp=document.getElementById('cmax'), lbl=document.getElementById('cmaxLabel');
     let v=parseFloat(inp.value); if(isNaN(v))return;
@@ -60,6 +75,7 @@ document.addEventListener('DOMContentLoaded', function() {
       if(p4===0&&p7===0){alert('No drug-induced repolarization changes based on your Predictor Inputs. TdP risk cannot be justified.');}
       const Thr=assay==='30'?Bottom*1.103:Bottom*1.0794;
       const logM=assay==='30'?(Thr+0.35)/0.92:(Thr+0.17)/0.93;
+      document.getElementById('estimatedQTc').innerHTML=`<strong>QTc (log M):</strong> ${logM.toFixed(4)}<br><strong>Conc >10ms QT:</strong> ${Math.pow(10,logM).toFixed(4)} µM`;
       const fitX=Array.from({length:100},(_,i)=>Math.pow(10,Math.log10(Math.max(0.001,Math.min(...concs)))+i*(Math.log10(Math.max(...concs))-Math.log10(Math.max(0.001,Math.min(...concs))))/99));
       const fitY=fitX.map(x=>hillf(x,best));
       if(hillChart)hillChart.destroy();
@@ -83,7 +99,7 @@ document.addEventListener('DOMContentLoaded', function() {
     let labels,data,colors;
     if(isModel1){
       title.innerText='Model 1 TdP Risk'; sub.innerHTML='This model uses logistic regression.<br>The model outputs are:';
-      labels=['High or Intermediate TdP Risk Probability','Low TdP Risk Probability'];
+      labels=['High/Intermediate TdP Risk Probability','Low TdP Risk Probability'];
       data=[Prob1*100,(1-Prob1)*100];
     } else {
       title.innerText='Model 2 TdP Risk'; sub.innerHTML='This model uses ordinal regression.<br>The model outputs are:';
@@ -93,8 +109,10 @@ document.addEventListener('DOMContentLoaded', function() {
     colors = labels.map(l => l.includes('High')? 'rgb(230,75,53)' : l.includes('Intermediate')? 'rgb(254,168,9)' : 'rgb(3,160,135)');
     res.innerHTML = '<ul style="margin-left:20px;">' + labels.map((l,i)=>`<li><strong>${l}:</strong> ${data[i].toFixed(1)}%</li>`).join('') + '</ul>';
     if(modelChart) modelChart.destroy();
-    modelChart=new Chart(document.getElementById('modelChart'), {  type:'bar',  data:{labels,datasets:[    {label:'% Risk',data,backgroundColor:colors},    {type:'line',label:'80% threshold',data:labels.map(()=>80),borderColor:'red',borderWidth:5,borderDash:[6,6],pointRadius:0,fill:false}  ]},
-      options:{ plugins:{annotation:{annotations:{line1:{type:'line',yMin:80,yMax:80,borderColor:'red',borderWidth:5,borderDash:[6,6]}}}}, 
+    modelChart=new Chart(document.getElementById('modelChart'), {
+      type:'bar',
+      data:{labels,datasets:[{label:'% Risk',data,backgroundColor:colors}]},
+      options:{ 
         scales:{
           x:{ grid:{lineWidth:5}, ticks:{font:{size:20}} },
           y:{ beginAtZero:true, max:100, grid:{lineWidth:5}, ticks:{font:{size:20}}}
