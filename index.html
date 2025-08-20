@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>TdP Risk Categorization Calculator Program</title>
+<title>TdP Risk Assessment Categorization (TRAC) Calculator</title>
 <link href="style.css" rel="stylesheet"/>
 <script defer="" src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script><script defer="True" src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@3.0.1/dist/chartjs-plugin-annotation.min.js"></script>
 <script defer="" src="script_v232.js"></script>
@@ -13,7 +13,7 @@
 <body>
 <div class="app">
 <header style="background-color: rgb(40,124,188); color: white; padding: 20px; margin-bottom: 20px;">
-<h1 style="margin: 0;">TdP Risk Categorization Calculator Program</h1>
+<h1 style="margin: 0;">TdP Risk Assessment Categorization (TRAC) Calculator</h1>
 </header>
 <section class="predictors">
 <h2>Predictor Inputs</h2>
@@ -93,27 +93,15 @@
 <div class="chart-block"><canvas id="hillPlot"></canvas></div>
 </div>
 </section>
-<section class="qt-pred collapsible">
-<h2 id="qtSectionHeader" style="cursor:pointer;">▸ QT Prolongation Prediction (in progress)</h2>
-<div id="qtSectionContent" style="display:none;">
-<div class="chart-block">
-<h3>Predicted QT Prolongation Based on Kilfoil Model (Kilfoil et al., 2021)</h3>
-<p><strong>Notes:</strong> QTc is estimated concentration for &gt;10 ms QT prolongation.<br/>cAPD<sub>90</sub> is corrected APD<sub>90</sub>.</p>
-<p><strong>Equation:</strong> QTc = 0.92 × cAPD<sub>90</sub> − 0.35</p>
-<p id="estimatedQTc">N/A</p>
-</div>
-</div>
-</section>
 <section class="references">
 <h2>References</h2>
 <ul>
 <li><a href="https://pubmed.ncbi.nlm.nih.gov/30257217/" target="_blank">Blinova et al. 2018 PMID: 30257217</a></li>
 <li><a href="https://pubmed.ncbi.nlm.nih.gov/30912807/" target="_blank">Patel et al. 2019 PMID: 30912807</a></li>
-<li><a href="https://pubmed.ncbi.nlm.nih.gov/31840870/" target="_blank">May et al. 2019 PMID: 31840870</a></li>
-<li><a href="https://pubmed.ncbi.nlm.nih.gov/37670480/" target="_blank">Kashou et al. 2023 PMID: 37670480</a></li>
 </ul>
 </section>
 </section>
 </div>
+<footer style="text-align:center; color:#888; font-size:10pt; margin-top:20px;">V3.34</footer>
 </body>
 </html>
