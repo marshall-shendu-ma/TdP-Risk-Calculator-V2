@@ -59,16 +59,44 @@ document.addEventListener('DOMContentLoaded', function() {
       const cellEl=document.getElementById('celltype'); cell=cellEl?parseFloat(cellEl.value):0;
       
       document.querySelectorAll('#dataBody tr').forEach(r=>{const [ci,fi]=r.querySelectorAll('input'),c=parseFloat(ci.value),f=parseFloat(fi.value);if(!isNaN(c)&&!isNaN(f)){concs.push(c);fpdcs.push(f);}});
+      // Check Cmax within input concentration range
+      if (!isNaN(Cmax)) {
+        const minConc = Math.min(...concs);
+        const maxConc = Math.max(...concs);
+        if (Cmax < minConc || Cmax > maxConc) {
+          alert("Cmax is outside of the concentration range in your input.\nTdP Risk cannot be calculated.");
+          return;
+        }
+      }
       if(concs.length<3){alert('Enter ≥3 points');return;}
       p4=Math.max(...fpdcs);
-      const Bottom=Math.min(...fpdcs),Top=Math.max(...fpdcs);
-      const med=a=>{const s=[...a].sort((x,y)=>x-y),m=Math.floor(s.length/2);return a.length%2?s[m]:(s[m-1]+s[m])/2;};
-      const guess={Bottom,Top,EC50:med(concs),Hill:1};
-      const hillf=(x,p)=>p.Bottom+(p.Top-p.Bottom)/(1+Math.pow(p.EC50/x,p.Hill));
-      let best={...guess},minE=Infinity;
-      const loss=p=>fpdcs.reduce((s,y,i)=>s+Math.pow(hillf(concs[i],p)-y,2),0);
-      for(let h=0.1;h<=5;h+=0.1)for(let ec=0.01;ec<=Math.max(...concs)*10;ec+=0.1){const t={...guess,EC50:ec,Hill:h},e=loss(t);if(e<minE){minE=e;best=t;} }
-      const FPDc=hillf(Cmax||0.01,best);p7=FPDc;document.getElementById('predictor1').value=String(arr);document.getElementById('predictor4').value=isFinite(p4)?Number(p4).toFixed(4):'';document.getElementById('predictor7').value=isFinite(p7)?Number(p7).toFixed(4):'';
+      // Determine trend and set Top/Bottom to allow negative or positive Hill fit
+      const minY = Math.min(...fpdcs), maxY = Math.max(...fpdcs);
+      // Simple slope estimate
+      const meanX = concs.reduce((a,b)=>a+b,0)/concs.length;
+      const meanY = fpdcs.reduce((a,b)=>a+b,0)/fpdcs.length;
+      const slope = concs.map((x,i)=>(x-meanX)*(fpdcs[i]-meanY)).reduce((a,b)=>a+b,0) /
+                    concs.map(x=>(x-meanX)*(x-meanX)).reduce((a,b)=>a+b,1e-9);
+      const decreasing = slope < 0;
+      const Bottom = decreasing ? maxY : minY;
+      const Top    = decreasing ? minY : maxY;
+
+      const med = a => { const s=[...a].sort((x,y)=>x-y), m=Math.floor(s.length/2); return a.length%2?s[m]:(s[m-1]+s[m])/2; };
+      const guess = { Bottom, Top, EC50: med(concs), Hill: 1 }; // lock Hill coefficient at 1
+
+      // Hill function with Hill fixed at 1
+      const hillf = (x,p) => p.Bottom + (p.Top - p.Bottom) / (1 + (p.EC50 / x));
+
+      // Fit EC50 on a grid while Hill fixed at 1
+      let best = { ...guess }, minE = Infinity;
+      const loss = p => fpdcs.reduce((s,y,i)=>s + Math.pow(hillf(concs[i],p) - y, 2), 0);
+      for (let ec = Math.min(...concs)*0.1; ec <= Math.max(...concs)*10; ec += (Math.max(...concs)-Math.min(...concs))/100) {
+        const t = { ...guess, EC50: ec };
+        const e = loss(t);
+        if (e < minE) { minE = e; best = t; }
+      }
+
+      const FPDc = hillf(Cmax||Math.min(...concs), best);p7=FPDc;document.getElementById('predictor1').value=String(arr);document.getElementById('predictor4').value=isFinite(p4)?Number(p4).toFixed(4):'';document.getElementById('predictor7').value=isFinite(p7)?Number(p7).toFixed(4):'';
       if(p4===0&&p7===0){alert('No drug-induced repolarization changes based on your Predictor Inputs. TdP risk cannot be justified.');}
       const Thr=assay==='30'?Bottom*1.103:Bottom*1.0794;
       const logM=assay==='30'?(Thr+0.35)/0.92:(Thr+0.17)/0.93;
