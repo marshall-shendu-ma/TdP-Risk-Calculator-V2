@@ -124,7 +124,7 @@ document.addEventListener('DOMContentLoaded', function() {
     let labels,data,colors;
     if(isModel1){
       title.innerText='Model 1 TdP Risk'; sub.innerHTML='This model uses logistic regression.<br>The model outputs are:';
-      labels=['High/Intermediate TdP Risk Probability','Low TdP Risk Probability'];
+      labels=['High or Intermediate TdP Risk Probability','Low TdP Risk Probability'];
       data=[Prob1*100,(1-Prob1)*100];
     } else {
       title.innerText='Model 2 TdP Risk'; sub.innerHTML='This model uses ordinal regression.<br>The model outputs are:';
@@ -142,7 +142,7 @@ modelChart=new Chart(document.getElementById('modelChart'), {
     const baseOpts={
       scales:{
         x:{ grid:{lineWidth:5}, ticks:{font:{size:20}} },
-        y:{ beginAtZero:true, max:100, grid:{lineWidth:5}, ticks:{font:{size:20}}, title:{display:true, text:'Predicted Risk', font:{size:18}} }
+        y:{ beginAtZero:true, max:100, grid:{lineWidth:5}, ticks:{font:{size:20}}, title:{display:true, text:'Predicted Risk Probability', font:{size:18}} }
       },
       plugins:{ legend:{display:false} }
     };
