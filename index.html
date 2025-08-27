@@ -15,6 +15,11 @@
 <header style="background-color: rgb(40,124,188); color: white; padding: 20px; margin-bottom: 20px;">
 <h1 style="margin: 0;">TdP Risk Assessment Categorization (TRAC) Calculator</h1>
 </header>
+<section class="introduction">
+  <h2>Introduction</h2>
+  <p>The TdP risk assessment categorization calculator is used to assess the TdP risk of small molecule compounds using three (3) hiPSC-CM electrophysiological response predictors as part of the evolving Comprehensive In Vitro Proarrhythmia Assay (CiPA) paradigm.</p>
+</section>
+
 <section class="predictors">
 <h2>Predictor Inputs</h2>
 <div class="predictor-grid" style="display:flex; gap:20px; margin-bottom:10px;">
@@ -27,12 +32,12 @@
 </div>
 <div style="display:flex; flex-direction:column;">
 <label for="predictor4"><strong>Predictor 4</strong></label>
-<p>Maximum repolarization change observed at any concentration (ms).</p>
+<p>Maximum repolarization change observed at any concentration (ms). (ΔΔFPDc or ΔΔAPD90c)</p>
 <input id="predictor4" placeholder="e.g. 25" step="any" type="number"/>
 </div>
 <div style="display:flex; flex-direction:column;">
 <label for="predictor7"><strong>Predictor 7</strong></label>
-<p>Drug-induced repolarization change at expected Cmax (ms).</p>
+<p>Drug-induced repolarization change at expected Cmax (ms). (ΔΔFPDc or ΔΔAPD90c)</p>
 <input id="predictor7" placeholder="e.g. 15" step="any" type="number"/>
 </div>
 </div>
@@ -49,13 +54,15 @@
 <div id="modelResults"></div>
 <canvas id="modelChart"></canvas>
 <section class="instructions">
-<h2>Instructions</h2>
-<ol>
-<li>For details on how to use the hiPSC-CM CiPA TdP Risk Categorization Tool, read the <a href="cou.html#coU" target="_blank">Context of Use (CoU)</a>, which includes <a href="cou.html#limitations" target="_blank">limitations of use</a>.</li>
-<li>Insert the model predictor input parameters in the “TdP input parameters” table. Hover over the information icons next to each section header for definitions and range of use. Check changes in the waveform parameter interactive visual.</li>
-<li>Read the outputs in the “Program Outputs” table to obtain the TdP risk categorization estimated by the selected parameters.</li>
-<li>Graphical depiction of the estimated TdP risk potential will be displayed in the “TdP Risk Categorization Estimation” section. The concentration-response curves (Hill Curve) update with the estimated Cmax for the selected pulse parameters.</li>
-</ol>
+  <h2>Instructions</h2>
+  <ol>
+    <li>For details on how to use the hiPSC-CM CiPA TdP Risk Assessment Categorization (TRAC) Calculator, read the Context of Use (CoU), which includes limitations of use.</li>
+    <li>Insert the model predictor input parameters.</li>
+    <li>Click Calculate</li>
+    <li>Read the outputs in the “Program outputs” section to obtain the TdP risk categorization estimated by the set of input parameters.</li>
+    <li>Graphical depiction of the estimated TdP risk potential will be displayed for Model 1 TdP Risk (Click Switch Model to display Model 2 TdP Risk results).</li>
+    <li>To use the Cmax interpolation feature add the input parameters and click Calculate.</li>
+  </ol>
 </section>
 </div>
 <section class="inputs collapsible">
@@ -98,6 +105,6 @@
 </section>
 </section>
 </div>
-<footer style="text-align:center; color:#888; font-size:10pt; margin-top:20px;">Version 3.42 • 2025-08-25</footer>
+<footer style="text-align:center; color:#888; font-size:10pt; margin-top:20px;">Version 3.43 • 2025-08-27</footer>
 </body>
 </html>

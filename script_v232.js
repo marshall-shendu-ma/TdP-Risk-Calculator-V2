@@ -2,6 +2,7 @@ document.addEventListener('DOMContentLoaded', function() {
   try{ if(window.ChartAnnotation){ Chart.register(window.ChartAnnotation); } }catch(e){}
 
   let hillChart, modelChart, isModel1 = true;
+  let blockModelRender = false;
   let Prob1=0, Prob2a=0, Prob2b=0, cmaxIsNM=false;
 
   // collapse toggles
@@ -40,11 +41,13 @@ document.addEventListener('DOMContentLoaded', function() {
   window.addRow=()=>{const tb=document.getElementById('dataBody'),r=document.createElement('tr');r.innerHTML='<td><input name="concentration[]" type="number" step="any" required></td><td><input name="fpdc[]" type="number" step="any" required></td><td><button type="button" onclick="removeRow(this)">−</button></td>';tb.appendChild(r);};
   window.removeRow=btn=>btn.closest('tr').remove();
 
-  document.getElementById('toggleModelBtn').addEventListener('click',()=>{isModel1=!isModel1;updateModelPanel();});
+  document.getElementById('toggleModelBtn').addEventListener('click',()=>{isModel1=!isModel1;if(hadError && predOnly){ clearModelChart(); return; } updateModelPanel();});
   document.getElementById('predictorCalcBtn').addEventListener('click',()=>calculate(true));
   document.getElementById('riskForm').addEventListener('submit',e=>{e.preventDefault();calculate(false);});
 
   function calculate(predOnly){
+    blockModelRender = false;
+    let hadError = false;
     let arr,p4,p7,cell=0,assay='30',Cmax,concs=[],fpdcs=[];
     if(predOnly){
       arr=parseInt(document.getElementById('predictor1').value);
@@ -110,16 +113,25 @@ document.addEventListener('DOMContentLoaded', function() {
     const map1=[0,0.6583,1.7944],map2a=[0,1.0551,2.1732],map2b=[0,0.3865,0.8737];
     const logit1=-0.1311+map1[arr]+0.00687*p4+0.0232*p7;
     Prob1=1/(1+Math.exp(-logit1));
-    if(Prob1<0){alert('Model 1 returned a negative risk probability result and is not applicable for your Predictor Inputs.');}
+    if(Prob1<0){alert('Model 1 returned a negative risk probability result and is not applicable for your Predictor Inputs.'); if(predOnly){hadError=true;}}
     const logit2a=-0.1211+cell*0.2211+map2a[arr]+0.00105*p4+0.0338*p7;
     Prob2a=1/(1+Math.exp(-logit2a));
     const logit2b=-2.1102+cell*0.2211+map2b[arr]+0.00105*p4+0.0338*p7;
     Prob2b=1/(1+Math.exp(-logit2b));
-    if(Prob2a<0||Prob2b<0||(1-Prob2a-Prob2b)<0){alert('Model 2 returned a negative risk probability result and is not applicable for your Predictor Inputs.');}
-    updateModelPanel();
+    if(Prob2a<0||Prob2b<0||(1-Prob2a-Prob2b)<0){alert('Model 2 returned a negative risk probability result and is not applicable for your Predictor Inputs.'); if(predOnly){hadError=true;}}
+    if(hadError && predOnly){ clearModelChart(); return; } updateModelPanel();
   }
 
-  function updateModelPanel(){
+  
+  function clearModelChart(){
+    const res=document.getElementById('modelResults');
+    const sub=document.getElementById('modelSubtitle');
+    if(modelChart){ modelChart.destroy(); modelChart = null; }
+    if(res) res.innerHTML='';
+    if(sub) sub.innerHTML='';
+  }
+function updateModelPanel(){
+    if(blockModelRender){ clearModelChart(); return; }
     const title=document.getElementById('modelTitle'),sub=document.getElementById('modelSubtitle'),res=document.getElementById('modelResults');
     let labels,data,colors;
     if(isModel1){
