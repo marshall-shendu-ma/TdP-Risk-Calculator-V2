@@ -56,7 +56,7 @@
 <section class="instructions">
   <h2>Instructions</h2>
   <ol>
-    <li>For details on how to use the hiPSC-CM CiPA TdP Risk Assessment Categorization (TRAC) Calculator, read the Context of Use (CoU), which includes limitations of use.</li>
+    <li>For details on how to use the hiPSC-CM CiPA TdP Risk Assessment Categorization (TRAC) Calculator, read the <a href="cou.html#coU" target="_blank">Context of Use (CoU)</a>, which includes <a href="cou.html#limitations" target="_blank">limitations of use</a>.</li>
     <li>Insert the model predictor input parameters.</li>
     <li>Click Calculate</li>
     <li>Read the outputs in the “Program outputs” section to obtain the TdP risk categorization estimated by the set of input parameters.</li>
@@ -77,7 +77,7 @@
 <div><label for="arrhythmia">Arrhythmia Type</label><select id="arrhythmia"><option value="0">None</option><option value="1">Type A</option><option value="2">Other</option></select></div>
 <div>
 <label>Concentration – FPDc Pairs</label>
-<table><thead><tr><th id="concHeader">Concentration (<span class="plain-greek">µ</span>M)</th><th>ΔΔFPDc (ms)</th><th></th></tr></thead>
+<table><thead><tr><th id="concHeader">Concentration (<span class="plain-greek">µ</span>M)</th><th>ΔΔFPDc or ΔΔAPD90c (ms)</th><th></th></tr></thead>
 <tbody id="dataBody">
 <tr><td><input name="concentration[]" required="" step="any" type="number"/></td><td><input name="fpdc[]" required="" step="any" type="number"/></td><td><button onclick="removeRow(this)" type="button">−</button></td></tr>
 <tr><td><input name="concentration[]" required="" step="any" type="number"/></td><td><input name="fpdc[]" required="" step="any" type="number"/></td><td><button onclick="removeRow(this)" type="button">−</button></td></tr>
@@ -105,6 +105,6 @@
 </section>
 </section>
 </div>
-<footer style="text-align:center; color:#888; font-size:10pt; margin-top:20px;">Version 3.43 • 2025-08-27</footer>
+<footer style="text-align:center; color:#888; font-size:10pt; margin-top:20px;">Version 3.44 • 2025-08-27</footer>
 </body>
 </html>
