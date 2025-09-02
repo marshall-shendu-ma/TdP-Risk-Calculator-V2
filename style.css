@@ -1,0 +1,21 @@
+body { font-family: sans-serif; padding: 20px; background: #f8f8f8; }
+
+
+.plain-greek{font-style:normal;}
+
+/* Responsive text scaling */
+body { font-size: clamp(12px, 1.5vw, 18px); }
+h1, h2, h3 { font-size: clamp(16px, 2vw, 24px); }
+
+
+/* Canvas sizing: responsive width, bounded height to prevent runaway growth */
+canvas {
+  max-width: 100%;
+  width: 100%;
+  height: clamp(240px, 42vh, 520px);
+  display: block;
+}
+.chart-block, .model-panel { 
+  /* ensure containers don't expand infinitely */
+  max-width: 100%;
+}
