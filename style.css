@@ -1,9 +1,0 @@
-body { font-family: sans-serif; padding: 20px; background: #f8f8f8; }
-
-
-.plain-greek{font-style:normal;}
-
-/* Responsive text scaling */
-body { font-size: clamp(12px, 1.5vw, 18px); }
-h1, h2, h3 { font-size: clamp(16px, 2vw, 24px); }
-canvas { max-width: 100%; height: auto !important; }
