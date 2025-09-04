@@ -2,3 +2,24 @@ body { font-family: sans-serif; padding: 20px; background: #f8f8f8; }
 
 
 .plain-greek{font-style:normal;}
+
+
+/* Two-column layout modeled after PFA calculator */
+.two-col{
+  display:grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  align-items:start;
+}
+.two-col .col section, .two-col .col .model-panel{
+  background:#fff;
+  border-radius:12px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+  padding:16px;
+  margin-bottom:16px;
+}
+@media (max-width: 1100px){
+  .two-col{ grid-template-columns: 1fr; }
+}
+/* Preserve existing app padding if present */
+.app{ max-width: 1400px; margin: 0 auto; }
