@@ -32,3 +32,12 @@ body { font-family: sans-serif; padding: 20px; background: #f8f8f8; }
   height: 340px !important;
   max-height: 50vh;
 }
+
+
+/* V3.63: Larger, responsive charts for two-column layout */
+.model-panel canvas#modelChart,
+.hill-fit canvas#hillPlot{
+  width: 100% !important;
+  height: 420px !important;
+  max-height: 60vh;
+}
