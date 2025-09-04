@@ -41,7 +41,7 @@ document.addEventListener('DOMContentLoaded', function() {
   window.addRow=()=>{const tb=document.getElementById('dataBody'),r=document.createElement('tr');r.innerHTML='<td><input name="concentration[]" type="number" step="any" required></td><td><input name="fpdc[]" type="number" step="any" required></td><td><button type="button" onclick="removeRow(this)">−</button></td>';tb.appendChild(r);};
   window.removeRow=btn=>btn.closest('tr').remove();
 
-  document.getElementById('toggleModelBtn').addEventListener('click',()=>{isModel1=!isModel1; updateModelPanel();});
+  document.getElementById('toggleModelBtn').addEventListener('click',()=>{isModel1=!isModel1;if(hadError && predOnly){ clearModelChart(); return; } updateModelPanel();});
   document.getElementById('predictorCalcBtn').addEventListener('click',()=>calculate(true));
   document.getElementById('riskForm').addEventListener('submit',e=>{e.preventDefault();calculate(false);});
 
@@ -107,19 +107,19 @@ document.addEventListener('DOMContentLoaded', function() {
       const fitX=Array.from({length:100},(_,i)=>Math.pow(10,Math.log10(Math.max(0.001,Math.min(...concs)))+i*(Math.log10(Math.max(...concs))-Math.log10(Math.max(0.001,Math.min(...concs))))/99));
       const fitY=fitX.map(x=>hillf(x,best));
       if(hillChart)hillChart.destroy();
-      hillChart=new Chart(document.getElementById('hillPlot'),{type:'line',data:{labels:fitX,datasets:[{label:'Hill Fit',data:fitX.map((x,i)=>({x,y:fitY[i]})),borderWidth:3,fill:false},{label:'Data',type:'scatter',data:concs.map((x,i)=>({x,y:fpdcs[i]})),pointRadius:4},{label:'Cmax',type:'scatter',data:[{x:Cmax,y:FPDc}],pointRadius:6}]},options:{scales:{x:{type:'logarithmic', grid:{lineWidth:5}, ticks:{font:{size: 'auto'}}, title:{display:true, text:'Concentration (µM)', font:{size: 'auto'}}},y:{grid:{lineWidth:5}, ticks:{font:{size: 'auto'}}, title:{display:true, text:'ΔΔFPDc or ΔΔAPD90c (ms)', font:{size: 'auto'}}}}}});
+      hillChart=new Chart(document.getElementById('hillPlot'),{type:'line',data:{labels:fitX,datasets:[{label:'Hill Fit',data:fitX.map((x,i)=>({x,y:fitY[i]})),borderWidth:3,fill:false},{label:'Data',type:'scatter',data:concs.map((x,i)=>({x,y:fpdcs[i]})),pointRadius:4},{label:'Cmax',type:'scatter',data:[{x:Cmax,y:FPDc}],pointRadius:6}]},options:{scales:{x:{type:'logarithmic', grid:{lineWidth:5}, ticks:{font:{size:20}}, title:{display:true, text:'Concentration (µM)', font:{size:18}}},y:{grid:{lineWidth:5}, ticks:{font:{size:20}}, title:{display:true, text:'ΔΔFPDc (ms)', font:{size:18}}}}}});
     }
     // model probabilities
     const map1=[0,0.6583,1.7944],map2a=[0,1.0551,2.1732],map2b=[0,0.3865,0.8737];
     const logit1=-0.1311+map1[arr]+0.00687*p4+0.0232*p7;
     Prob1=1/(1+Math.exp(-logit1));
-    if(Prob1<0){alert('Model 1 returned a negative risk probability result and is not applicable for your Predictor Inputs.');}
+    if(Prob1<0){alert('Model 1 returned a negative risk probability result and is not applicable for your Predictor Inputs.'); if(predOnly){hadError=true;}}
     const logit2a=-0.1211+cell*0.2211+map2a[arr]+0.00105*p4+0.0338*p7;
     Prob2a=1/(1+Math.exp(-logit2a));
     const logit2b=-2.1102+cell*0.2211+map2b[arr]+0.00105*p4+0.0338*p7;
     Prob2b=1/(1+Math.exp(-logit2b));
-    if(Prob2a<0||Prob2b<0||(1-Prob2a-Prob2b)<0){alert('Model 2 returned a negative risk probability result and is not applicable for your Predictor Inputs.');}
-     updateModelPanel();
+    if(Prob2a<0||Prob2b<0||(1-Prob2a-Prob2b)<0){alert('Model 2 returned a negative risk probability result and is not applicable for your Predictor Inputs.'); if(predOnly){hadError=true;}}
+    if(hadError && predOnly){ clearModelChart(); return; } updateModelPanel();
   }
 
   
@@ -150,11 +150,11 @@ function updateModelPanel(){
 modelChart=new Chart(document.getElementById('modelChart'), {
   type:'bar',
   data:{ labels, datasets:[ { label:'% Risk', data, backgroundColor:colors } ] },
-  options:(()=>{const responsiveOpts={responsive:true, maintainAspectRatio:false};
-    const baseOpts={...responsiveOpts,
+  options:(()=>{
+    const baseOpts={
       scales:{
-        x:{ grid:{lineWidth:5}, ticks:{font:{size: 'auto'}} },
-        y:{ beginAtZero:true, max:100, grid:{lineWidth:5}, ticks:{font:{size: 'auto'}}, title:{display:true, text:'Predicted Risk Probability', font:{size: 'auto'}} }
+        x:{ grid:{lineWidth:5}, ticks:{font:{size:20}} },
+        y:{ beginAtZero:true, max:100, grid:{lineWidth:5}, ticks:{font:{size:20}}, title:{display:true, text:'Predicted Risk Probability', font:{size:18}} }
       },
       plugins:{ legend:{display:false} }
     };
