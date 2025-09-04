@@ -41,7 +41,8 @@ document.addEventListener('DOMContentLoaded', function() {
   window.addRow=()=>{const tb=document.getElementById('dataBody'),r=document.createElement('tr');r.innerHTML='<td><input name="concentration[]" type="number" step="any" required></td><td><input name="fpdc[]" type="number" step="any" required></td><td><button type="button" onclick="removeRow(this)">−</button></td>';tb.appendChild(r);};
   window.removeRow=btn=>btn.closest('tr').remove();
 
-  return; } updateModelPanel();});
+  updateModelPanel();
+});
   document.getElementById('predictorCalcBtn').addEventListener('click',()=>calculate(true));
   document.getElementById('riskForm').addEventListener('submit',e=>{e.preventDefault();calculate(false);});
 
