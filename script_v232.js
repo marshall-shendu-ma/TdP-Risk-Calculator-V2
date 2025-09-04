@@ -104,7 +104,7 @@ document.addEventListener('DOMContentLoaded', function() {
       const fitX=Array.from({length:100},(_,i)=>Math.pow(10,Math.log10(Math.max(0.001,Math.min(...concs)))+i*(Math.log10(Math.max(...concs))-Math.log10(Math.max(0.001,Math.min(...concs))))/99));
       const fitY=fitX.map(x=>hillf(x,best));
       if(hillChart)hillChart.destroy();
-      hillChart=new Chart(document.getElementById('hillPlot'),{type:'line',data:{labels:fitX,datasets:[{label:'Hill Fit',data:fitX.map((x,i)=>({x,y:fitY[i]})),borderWidth:3,fill:false},{label:'Data',type:'scatter',data:concs.map((x,i)=>({x,y:fpdcs[i]})),pointRadius:4},{label:'Cmax',type:'scatter',data:[{x:Cmax,y:FPDc}],pointRadius:6}]},options:{scales:{x:{type:'logarithmic', grid:{lineWidth:5}, ticks:{font:{size:20}}, title:{display:true, text:'Concentration (µM)', font:{size:18}}},y:{grid:{lineWidth:5}, ticks:{font:{size:20}}, title:{display:true, text:'ΔΔFPDc (ms)', font:{size:18}}}}}});
+      hillChart=new Chart(document.getElementById('hillPlot'),{type:'line',data:{labels:fitX,datasets:[{label:'Hill Fit',data:fitX.map((x,i)=>({x,y:fitY[i]})),borderWidth:3,fill:false},{label:'Data',type:'scatter',data:concs.map((x,i)=>({x,y:fpdcs[i]})),pointRadius:4},{label:'Cmax',type:'scatter',data:[{x:Cmax,y:FPDc}],pointRadius:6}]},options:{responsive:true,maintainAspectRatio:false,scales:{x:{type:'logarithmic', grid:{lineWidth:5}, ticks:{font:{size:20}}, title:{display:true, text:'Concentration (µM)', font:{size:18}}},y:{grid:{lineWidth:5}, ticks:{font:{size:20}}, title:{display:true, text:'ΔΔFPDc (ms)', font:{size:18}}}}}});
     }
     // model probabilities
     const map1=[0,0.6583,1.7944],map2a=[0,1.0551,2.1732],map2b=[0,0.3865,0.8737];
@@ -119,56 +119,73 @@ document.addEventListener('DOMContentLoaded', function() {
     updateModelPanel();
   }
 
+  
   function updateModelPanel(){
-    const title=document.getElementById('modelTitle'),sub=document.getElementById('modelSubtitle'),res=document.getElementById('modelResults');
-    let labels,data,colors;
+    const title=document.getElementById('modelTitle'),
+          sub=document.getElementById('modelSubtitle'),
+          res=document.getElementById('modelResults');
+    let labels,data;
     if(isModel1){
-      title.innerText='Model 1 TdP Risk'; sub.innerHTML='This model uses logistic regression.<br>The model outputs are:';
-      labels=['High/Intermediate TdP Risk Probability','Low TdP Risk Probability'];
+      title.innerText='Model 1 TdP Risk'; 
+      sub.innerHTML='This model uses logistic regression.<br>The model outputs are:';
+      labels=['High/Intermediate','Low'];
       data=[Prob1*100,(1-Prob1)*100];
     } else {
-      title.innerText='Model 2 TdP Risk'; sub.innerHTML='This model uses ordinal regression.<br>The model outputs are:';
-      labels=['High TdP Risk Probability','Intermediate TdP Risk Probability','Low TdP Risk Probability'];
+      title.innerText='Model 2 TdP Risk'; 
+      sub.innerHTML='This model uses ordinal regression.<br>The model outputs are:';
+      labels=['High','Intermediate','Low'];
       data=[Prob2a*100,Prob2b*100,(1-Prob2a-Prob2b)*100];
     }
-    colors = labels.map(l => l.includes('High')? 'rgb(230,75,53)' : l.includes('Intermediate')? 'rgb(254,168,9)' : 'rgb(3,160,135)');
-    res.innerHTML = '<ul style="margin-left:20px;">' + labels.map((l,i)=>`<li><strong>${l}:</strong> ${data[i].toFixed(1)}%</li>`).join('') + '</ul>';
+    const colors = labels.map(l => l==='High' || l==='High/Intermediate' ? 'rgb(230,75,53)' : l==='Intermediate' ? 'rgb(254,168,9)' : 'rgb(3,160,135)');
+    res.innerHTML = '<ul style="margin-left:20px;">' + labels.map((l,i)=>`<li><strong>${l} TdP Risk Probability:</strong> ${data[i].toFixed(1)}%</li>`).join('') + '</ul>';
+
     if(modelChart) modelChart.destroy();
-    
-modelChart=new Chart(document.getElementById('modelChart'), {
-  type:'bar',
-  data:{ labels, datasets:[ { label:'% Risk', data, backgroundColor:colors } ] },
-  options:(()=>{
-    const baseOpts={
-      scales:{
-        x:{ grid:{lineWidth:5}, ticks:{font:{size:20}} },
-        y:{ beginAtZero:true, max:100, grid:{lineWidth:5}, ticks:{font:{size:20}}, title:{display:true, text:'Predicted Risk', font:{size:18}} }
-      },
-      plugins:{ legend:{display:false} }
-    };
-    if(isModel1){
-      baseOpts.plugins.annotation = {
-        annotations:{
-          riskThreshold:{
-            type:'line',
-            yMin:80, yMax:80,
-            borderColor:'red',
-            borderWidth:5,
-            borderDash:[6,6],
-            label:{
-              display:true,
-              content:'Risk Probability Threshold',
-              position:'end',
-              color:'red',
-              font:{size:16, weight:'bold'},
-              yAdjust:-8       // put label above the line so the line doesn't cut through text
-            }
+
+    // Stacked bar: single x tick with stacked datasets
+    const xLabels = ['Predicted Risk'];
+    const ds = labels.map((l,i)=>({
+      label: l + ' Risk',
+      data: [data[i]],
+      backgroundColor: colors[i],
+      stack: 'risk',
+      borderWidth: 0,
+      borderRadius: 6,
+      maxBarThickness: 72
+    }));
+
+    modelChart = new Chart(document.getElementById('modelChart'), {
+      type: 'bar',
+      data: { labels: xLabels, datasets: ds },
+      options: (() => {
+        const baseOpts = {
+          responsive: true,
+          maintainAspectRatio: false,
+          layout: { padding: { top: 8, right: 8, bottom: 4, left: 8 } },
+          scales: {
+            x: { stacked: true, grid: { display: false }, ticks: { display: false } },
+            y: { stacked: true, beginAtZero: true, max: 100, grid: { color: 'rgba(0,0,0,0.08)' }, 
+                 ticks: { font: { size: 12 } }, title: { display: true, text: 'Predicted Risk (%)', font: { size: 14 } } }
+          },
+          plugins: {
+            legend: { display: true, position: 'chartArea', align: 'end',
+                      labels: { boxWidth: 14, boxHeight: 14, useBorderRadius: true, borderRadius: 3, font: { size: 12 } } },
+            tooltip: { callbacks: { label: ctx => `${ctx.dataset.label}: ${ctx.parsed.y.toFixed(1)}%` } }
           }
+        };
+        if(isModel1){
+          baseOpts.plugins.annotation = {
+            annotations: {
+              riskThreshold: {
+                type: 'line', yMin: 80, yMax: 80, borderColor: 'red', borderWidth: 2, borderDash: [6,6],
+                label: { display: true, content: 'Risk Probability Threshold (80%)', position: 'end',
+                         color: 'red', font: { size: 11, weight: 'bold' }, yAdjust: -6 }
+              }
+            }
+          };
         }
-      };
-    }
-    return baseOpts;
-  })()
-});
-}
+        return baseOpts;
+      })()
+    });
+  }
+
 });

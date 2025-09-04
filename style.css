@@ -23,3 +23,12 @@ body { font-family: sans-serif; padding: 20px; background: #f8f8f8; }
 }
 /* Preserve existing app padding if present */
 .app{ max-width: 1400px; margin: 0 auto; }
+
+
+/* Chart sizing for comfortable two-column layout */
+.model-panel canvas,
+.hill-fit canvas{
+  width: 100% !important;
+  height: 340px !important;
+  max-height: 50vh;
+}
