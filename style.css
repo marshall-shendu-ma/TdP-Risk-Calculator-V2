@@ -54,3 +54,7 @@ body { font-family: sans-serif; padding: 20px; background: #f8f8f8; }
 .two-col .col.right > section.hill-fit.align-pair-right { margin-top: 0; }
 
 canvas { image-rendering: auto; }
+
+
+/* V3.68 - Program Output canvas height */
+.model-panel canvas#modelChart{height:520px !important;}

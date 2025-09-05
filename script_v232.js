@@ -166,10 +166,10 @@ function updateModelPanel(){
         maintainAspectRatio: false,
         layout: { padding: {top:8,right:8,bottom:4,left:8} },
         scales: {
-          x: { stacked: true, grid: { display:false }, ticks: { display:false } },
+          x: { stacked: true, grid: { display:false , lineWidth:5}, ticks: { display:false } },
           y:{ stacked: true, beginAtZero: true, max: 100,
                grid:{color:'rgba(0,0,0,0.08)', lineWidth:5 lineWidth:5 },
-               ticks: { font:{size:14} },
+               ticks: { font:{size:20} },
                title:{display:true,text:'Predicted Risk (%)',font:{size:18}}} }
         },
         plugins: {
