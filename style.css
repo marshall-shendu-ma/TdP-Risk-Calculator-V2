@@ -52,3 +52,5 @@ body { font-family: sans-serif; padding: 20px; background: #f8f8f8; }
 .align-pair-right { margin-top: 0; }
 /* Ensure similar top spacing by nudging the earlier right column items */
 .two-col .col.right > section.hill-fit.align-pair-right { margin-top: 0; }
+
+canvas { image-rendering: auto; }
