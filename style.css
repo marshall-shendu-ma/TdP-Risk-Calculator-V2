@@ -56,5 +56,4 @@ body { font-family: sans-serif; padding: 20px; background: #f8f8f8; }
 canvas { image-rendering: auto; }
 
 
-/* V3.68 - Program Output canvas height */
-.model-panel canvas#modelChart{height:520px !important;}
+/* V3.67: increase Program Output canvas height to 520px for improved text ratios */

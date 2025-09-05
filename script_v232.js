@@ -104,7 +104,7 @@ document.addEventListener('DOMContentLoaded', function() {
       const fitX=Array.from({length:100},(_,i)=>Math.pow(10,Math.log10(Math.max(0.001,Math.min(...concs)))+i*(Math.log10(Math.max(...concs))-Math.log10(Math.max(0.001,Math.min(...concs))))/99));
       const fitY=fitX.map(x=>hillf(x,best));
       if(hillChart)hillChart.destroy();
-      hillChart=new Chart(document.getElementById('hillPlot'),{type:'line',data:{labels:fitX,datasets:[{label:'Hill Fit',data:fitX.map((x,i)=>({x,y:fitY[i]})),borderWidth:3,fill:false},{label:'Data',type:'scatter',data:concs.map((x,i)=>({x,y:fpdcs[i]})),pointRadius:4},{label:'Cmax',type:'scatter',data:[{x:Cmax,y:FPDc}],pointRadius:6}]},options:{responsive:true,maintainAspectRatio:false,scales:{x:{type:'logarithmic', grid:{lineWidth:5}, ticks:{font:{size:14}}, title:{display:true, text:'Concentration (µM)', font:{size:14}}},y:{grid:{lineWidth:5 lineWidth:5 }, ticks:{font:{size:14}}, title:{display:true, text:'ΔΔFPDc or ΔΔAPD90c (ms)', font:{size:14}}}}}});
+      hillChart=new Chart(document.getElementById('hillPlot'),{type:'line',data:{labels:fitX,datasets:[{label:'Hill Fit',data:fitX.map((x,i)=>({x,y:fitY[i]})),borderWidth:3,fill:false},{label:'Data',type:'scatter',data:concs.map((x,i)=>({x,y:fpdcs[i]})),pointRadius:4},{label:'Cmax',type:'scatter',data:[{x:Cmax,y:FPDc}],pointRadius:6}]},options:{responsive:true,maintainAspectRatio:false,scales:{x:{type:'logarithmic', grid:{lineWidth:5}, ticks:{font:{size:20}}, title:{display:true, text:'Concentration (µM)', font:{size:18}}},y:{grid:{lineWidth:5}, ticks:{font:{size:20}}, title:{display:true, text:'ΔΔFPDc or ΔΔAPD90c (ms)', font:{size:18}}}}}});
     }
     // model probabilities
     const map1=[0,0.6583,1.7944],map2a=[0,1.0551,2.1732],map2b=[0,0.3865,0.8737];
@@ -166,11 +166,11 @@ function updateModelPanel(){
         maintainAspectRatio: false,
         layout: { padding: {top:8,right:8,bottom:4,left:8} },
         scales: {
-          x: { stacked: true, grid: { display:false , lineWidth:5}, ticks: { display:false } },
+          x: { stacked: true, grid: { display:false }, ticks: { display:false } },
           y:{ stacked: true, beginAtZero: true, max: 100,
-               grid:{color:'rgba(0,0,0,0.08)', lineWidth:5 lineWidth:5 },
-               ticks: { font:{size:20} },
-               title:{display:true,text:'Predicted Risk (%)',font:{size:18}}} }
+               grid:{color:'rgba(0,0,0,0.08)', lineWidth:5},
+               ticks: { font: { size: 20 } },
+               title:{display:true, text:'Predicted Risk (%)', font:{size:18}} }
         },
         plugins: {
           legend: {
