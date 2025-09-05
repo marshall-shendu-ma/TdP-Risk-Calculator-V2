@@ -41,3 +41,8 @@ body { font-family: sans-serif; padding: 20px; background: #f8f8f8; }
   height: 420px !important;
   max-height: 60vh;
 }
+
+
+/* V3.64: secondary names under predictor labels and even column distribution */
+.secondary-name{display:block;font-size:12px;color:#666;margin-top:2px}
+.predictor-grid>div{flex:1;min-width:0}
