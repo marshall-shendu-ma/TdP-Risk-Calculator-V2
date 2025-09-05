@@ -46,3 +46,9 @@ body { font-family: sans-serif; padding: 20px; background: #f8f8f8; }
 /* V3.64: secondary names under predictor labels and even column distribution */
 .secondary-name{display:block;font-size:12px;color:#666;margin-top:2px}
 .predictor-grid>div{flex:1;min-width:0}
+
+/* V3.65: gentle vertical alignment for paired sections across columns */
+.align-pair-left { margin-top: 0; }
+.align-pair-right { margin-top: 0; }
+/* Ensure similar top spacing by nudging the earlier right column items */
+.two-col .col.right > section.hill-fit.align-pair-right { margin-top: 0; }
