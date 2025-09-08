@@ -36,12 +36,12 @@
 <div style="display:flex; flex-direction:column; flex:1; min-width:0;">
 <label for="predictor4"><strong>Maximum Repolarization (ΔΔFPDc or ΔΔAPD90c)</strong><br/><span class="secondary-name">Predictor 4</span></label>
 <p>Maximum repolarization change observed at any concentration (ms).</p>
-<input id="predictor4" placeholder="e.g. 25" step="any" type="number"/>
+<input id="predictor4" placeholder="-372 to 1280" step="any" type="number"/>
 </div>
 <div style="display:flex; flex-direction:column; flex:1; min-width:0;">
 <label for="predictor7"><strong>Repolarization at Cmax (ΔΔFPDc or ΔΔAPD90c)</strong><br/><span class="secondary-name">Predictor 7</span></label>
 <p>Drug-induced repolarization change at expected Cmax (ms).</p>
-<input id="predictor7" placeholder="e.g. 15" step="any" type="number"/>
+<input id="predictor7" placeholder="-100 to 303" step="any" type="number"/>
 </div>
 </div>
 <button id="predictorCalcBtn" type="button">Calculate</button>
@@ -71,12 +71,12 @@
 </select>
 </div>
 <div>
-<label>Concentration – FPDc Pairs</label>
-<table>
+<label style="margin-bottom:8px; display:block;">Concentration – FPDc Pairs</label>
+<table id="cmaxTable">
 <thead>
 <tr>
 <th id="concHeader">Concentration (<span class="plain-greek">µ</span>M)</th>
-<th>ΔΔFPDc or ΔΔAPD90c (ms)</th>
+<th>ΔΔFPDc or<br>ΔΔAPD90c (ms)</th>
 <th></th>
 </tr>
 </thead>

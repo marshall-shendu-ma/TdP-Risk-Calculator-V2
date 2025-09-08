@@ -79,3 +79,25 @@ button {
   border-radius: 6px;
 }
 
+
+
+/* V3.70: Improve Cmax Interpolation table spacing */
+#dataBody tr td { padding: 6px 14px; }
+#cmaxSectionContent table { margin-top: 12px; border-collapse: separate; border-spacing: 16px 12px; }
+#cmaxSectionContent th:nth-child(2) { white-space: normal; }
+
+
+/* V3.70: Cmax Interpolation table spacing and column breathing room */
+#cmaxTable { 
+  border-collapse: separate !important;
+  border-spacing: 24px 16px !important; /* horizontal | vertical */
+  width: 100%;
+  margin-top: 12px;
+}
+#cmaxTable th, #cmaxTable td { 
+  padding: 12px 14px !important; 
+  vertical-align: middle; 
+}
+#cmaxTable th:nth-child(2){ white-space: normal; } /* allow wrap */
+#dataBody tr { border-bottom: 8px solid transparent; } /* more vertical space between rows */
+
