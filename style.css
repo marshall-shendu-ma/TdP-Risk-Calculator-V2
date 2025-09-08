@@ -101,3 +101,6 @@ button {
 #cmaxTable th:nth-child(2){ white-space: normal; } /* allow wrap */
 #dataBody tr { border-bottom: 8px solid transparent; } /* more vertical space between rows */
 
+/* V3.77: tighten Program Outputs subtitle spacing */
+#modelSubtitle { margin: 0 0 8px 0; }
+
