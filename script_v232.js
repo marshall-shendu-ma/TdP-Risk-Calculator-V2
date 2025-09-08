@@ -50,7 +50,7 @@ document.addEventListener('DOMContentLoaded', function() {
       arr=parseInt(document.getElementById('predictor1').value);
       p4=parseFloat(document.getElementById('predictor4').value);
       p7=parseFloat(document.getElementById('predictor7').value);
-      if(isNaN(arr)||isNaN(p4)||isNaN(p7)){alert('Fill predictors');return;}const c=document.getElementById('cmax'); if(c) c.value='';document.querySelectorAll('#dataBody input').forEach(el=>el.value='');
+      if(isNaN(arr)||isNaN(p4)||isNaN(p7)){alert('Fill predictors');return;}validatePredictorRanges();const c=document.getElementById('cmax'); if(c) c.value='';document.querySelectorAll('#dataBody input').forEach(el=>el.value='');
       if(p4===0&&p7===0){alert('No drug-induced repolarization changes based on your Predictor Inputs. TdP risk cannot be justified.');}
     } else {
       Cmax=parseFloat(document.getElementById('cmax').value);
@@ -96,7 +96,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (e < minE) { minE = e; best = t; }
       }
 
-      const FPDc = hillf(Cmax||Math.min(...concs), best);p7=FPDc;document.getElementById('predictor1').value=String(arr);document.getElementById('predictor4').value=isFinite(p4)?Number(p4).toFixed(4):'';document.getElementById('predictor7').value=isFinite(p7)?Number(p7).toFixed(4):'';
+      const FPDc = hillf(Cmax||Math.min(...concs), best);p7=FPDc;document.getElementById('predictor1').value=String(arr);document.getElementById('predictor4').value=isFinite(p4)?Number(p4).toFixed(4):'';document.getElementById('predictor7').value=isFinite(p7)?Number(p7).toFixed(4):'';validatePredictorRanges();
       if(p4===0&&p7===0){alert('No drug-induced repolarization changes based on your Predictor Inputs. TdP risk cannot be justified.');}
       const Thr=assay==='30'?Bottom*1.103:Bottom*1.0794;
       const logM=assay==='30'?(Thr+0.35)/0.92:(Thr+0.17)/0.93;
@@ -130,7 +130,7 @@ function updateModelPanel(){
   if(isModel1){
     title.innerText='Model 1 TdP Risk';
     sub.innerHTML='This model uses logistic regression.<br>The model outputs are:';
-    labels=['High or Intermediate','Low'];
+    labels=['High/Intermediate','Low'];
     data=[Prob1*100,(1-Prob1)*100];
   }else{
     title.innerText='Model 2 TdP Risk';
@@ -139,7 +139,7 @@ function updateModelPanel(){
     data=[Prob2a*100,Prob2b*100,(1-Prob2a-Prob2b)*100];
   }
 
-  const colors = labels.map(l => (l==='High'||l==='High or Intermediate') ? 'rgb(230,75,53)'
+  const colors = labels.map(l => (l==='High'||l==='High/Intermediate') ? 'rgb(230,75,53)'
                             : (l==='Intermediate' ? 'rgb(254,168,9)' : 'rgb(3,160,135)'));
 
   res.innerHTML = '<ul style="margin-left:20px;">' +
@@ -170,7 +170,7 @@ function updateModelPanel(){
           y:{ stacked: true, beginAtZero: true, max: 100,
                grid:{color:'rgba(0,0,0,0.08)', lineWidth:5},
                ticks: { font: { size: 20 } },
-               title:{display:true, text:'Predicted Risk Probability (%)', font:{size:18}} }
+               title:{display:true, text:'Predicted Risk (%)', font:{size:18}} }
         },
         plugins: {
           legend: {
@@ -200,3 +200,17 @@ function updateModelPanel(){
 
 
 });
+
+// V3.69: Range validation for Predictor4 and Predictor7
+function validatePredictorRanges(){
+  const p4 = parseFloat(document.getElementById('predictor4').value);
+  if(!isNaN(p4) && (p4 < -372 || p4 > 1280)){
+    alert('WARNING You have entered a value outside of the input range, the program output will not be a compliant result of the logistic regression model.');
+  }
+  const p7 = parseFloat(document.getElementById('predictor7').value);
+  if(!isNaN(p7) && (p7 < -100 || p7 > 303)){
+    alert('WARNING You have entered a value outside of the input range, the program output will not be a compliant result of the logistic regression model.');
+  }
+}
+document.getElementById('predictor4').addEventListener('change', validatePredictorRanges);
+document.getElementById('predictor7').addEventListener('change', validatePredictorRanges);

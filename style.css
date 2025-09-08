@@ -58,11 +58,49 @@ canvas { image-rendering: auto; }
 
 /* V3.67: increase Program Output canvas height to 520px for improved text ratios */
 
-/* V3.68: enforce stable chart sizing across browsers/OS for Program Outputs */
-.model-panel { min-height: 640px; }
-.model-panel canvas#modelChart{ height: 560px !important; display:block; }
-@supports (-webkit-touch-callout: none) {
-  /* Safari/iOS specific nudge */
-  .model-panel canvas#modelChart{ height: 580px !important; }
+
+/* V3.69: Adjust Cmax Interpolation table spacing */
+#dataBody tr td{ padding:6px 12px; }
+#cmaxTable th, #cmaxTable td{ padding:8px 12px; vertical-align:middle; }
+#cmaxTable th:nth-child(2){ white-space:normal; }
+
+
+/* V3.69: Larger input fields */
+input[type=number], input[type=text], select {
+  padding:6px 10px;
+  font-size: 16px;
+  border-radius: 6px;
 }
 
+
+/* V3.69: Improve spacing for Cmax Interpolation rows and table columns */
+#cmaxTable{
+  border-collapse: separate !important;
+  border-spacing: 16px 12px !important; /* horizontal | vertical spacing */
+  width: 100%;
+}
+#cmaxTable th, #cmaxTable td{
+  padding: 10px 12px !important;
+  vertical-align: middle;
+}
+#cmaxTable input[type="number"]{
+  width: 100%;
+  box-sizing: border-box;
+}
+/* slightly more breathing room between dynamic rows */
+#dataBody tr { border-bottom: 6px solid transparent; }
+
+
+/* V3.69: larger input controls for readability */
+input[type="number"], input[type="text"], select, textarea {
+  font-size: 18px !important;
+  padding: 10px 12px !important;
+  height: 44px;
+  border-radius: 8px;
+}
+button {
+  font-size: 16px;
+  padding: 10px 14px;
+  border-radius: 10px;
+}
+label { font-size: 16px; }
