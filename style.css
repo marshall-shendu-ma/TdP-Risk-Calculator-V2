@@ -57,3 +57,12 @@ canvas { image-rendering: auto; }
 
 
 /* V3.67: increase Program Output canvas height to 520px for improved text ratios */
+
+/* V3.68: enforce stable chart sizing across browsers/OS for Program Outputs */
+.model-panel { min-height: 640px; }
+.model-panel canvas#modelChart{ height: 560px !important; display:block; }
+@supports (-webkit-touch-callout: none) {
+  /* Safari/iOS specific nudge */
+  .model-panel canvas#modelChart{ height: 580px !important; }
+}
+

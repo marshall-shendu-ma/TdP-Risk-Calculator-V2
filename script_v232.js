@@ -130,7 +130,7 @@ function updateModelPanel(){
   if(isModel1){
     title.innerText='Model 1 TdP Risk';
     sub.innerHTML='This model uses logistic regression.<br>The model outputs are:';
-    labels=['High/Intermediate','Low'];
+    labels=['High or Intermediate','Low'];
     data=[Prob1*100,(1-Prob1)*100];
   }else{
     title.innerText='Model 2 TdP Risk';
@@ -139,7 +139,7 @@ function updateModelPanel(){
     data=[Prob2a*100,Prob2b*100,(1-Prob2a-Prob2b)*100];
   }
 
-  const colors = labels.map(l => (l==='High'||l==='High/Intermediate') ? 'rgb(230,75,53)'
+  const colors = labels.map(l => (l==='High'||l==='High or Intermediate') ? 'rgb(230,75,53)'
                             : (l==='Intermediate' ? 'rgb(254,168,9)' : 'rgb(3,160,135)'));
 
   res.innerHTML = '<ul style="margin-left:20px;">' +
@@ -170,7 +170,7 @@ function updateModelPanel(){
           y:{ stacked: true, beginAtZero: true, max: 100,
                grid:{color:'rgba(0,0,0,0.08)', lineWidth:5},
                ticks: { font: { size: 20 } },
-               title:{display:true, text:'Predicted Risk (%)', font:{size:18}} }
+               title:{display:true, text:'Predicted Risk Probability (%)', font:{size:18}} }
         },
         plugins: {
           legend: {
