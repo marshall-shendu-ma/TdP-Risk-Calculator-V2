@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', function() {
   try{ if(window.ChartAnnotation){ Chart.register(window.ChartAnnotation); } }catch(e){}
 
-  let hillChart, modelChart, 
+  let hillChart, modelChart;
   let Prob1=0, cmaxIsNM=false;
 
   // collapse toggles
@@ -40,7 +40,7 @@ document.addEventListener('DOMContentLoaded', function() {
   window.addRow=()=>{const tb=document.getElementById('dataBody'),r=document.createElement('tr');r.innerHTML='<td><input name="concentration[]" type="number" step="any" required></td><td><input name="fpdc[]" type="number" step="any" required></td><td><button type="button" onclick="removeRow(this)">−</button></td>';tb.appendChild(r);};
   window.removeRow=btn=>btn.closest('tr').remove();
 
-  });
+  updateModelPanel();});
   document.getElementById('predictorCalcBtn').addEventListener('click',()=>calculate(true));
   document.getElementById('riskForm').addEventListener('submit',e=>{e.preventDefault();calculate(false);});
 
@@ -106,27 +106,35 @@ document.addEventListener('DOMContentLoaded', function() {
       if(hillChart)hillChart.destroy();
       hillChart=new Chart(document.getElementById('hillPlot'),{type:'line',data:{labels:fitX,datasets:[{label:'Hill Fit',data:fitX.map((x,i)=>({x,y:fitY[i]})),borderWidth:3,fill:false},{label:'Data',type:'scatter',data:concs.map((x,i)=>({x,y:fpdcs[i]})),pointRadius:4},{label:'Cmax',type:'scatter',data:[{x:Cmax,y:FPDc}],pointRadius:6}]},options:{responsive:true,maintainAspectRatio:false,scales:{x:{type:'logarithmic', grid:{lineWidth:5}, ticks:{font:{size:20}}, title:{display:true, text:'Concentration (µM)', font:{size:18}}},y:{grid:{lineWidth:5}, ticks:{font:{size:20}}, title:{display:true, text:'ΔΔFPDc or ΔΔAPD90c (ms)', font:{size:18}}}}}});
     }
-    // model probabilities
-    const map1=[0,0.6583,1.7944];
-    const logit1=-0.1311+map1[arr]+0.00687*p4+0.0232*p7;
-    Prob1=1/(1+Math.exp(-logit1));
-    if(Prob1<0){alert('Model 1 returned a negative risk probability result and is not applicable for your Predictor Inputs.');}
-    updateModelPanel();
-  }
+    // model probability (Model 1 only)
+const map1=[0,0.6583,1.7944];
+const logit1=-0.1311+map1[arr]+0.00687*p4+0.0232*p7;
+Prob1=1/(1+Math.exp(-logit1));
+if(Prob1<0){alert('Model 1 returned a negative risk probability result and is not applicable for your Predictor Inputs.');}
+updateModelPanel();
+}
 
   
   
-
 function updateModelPanel(){
   const title=document.getElementById('modelTitle'),
         sub=document.getElementById('modelSubtitle'),
         res=document.getElementById('modelResults');
-  title.innerText='Model 1 TdP Risk';
-  sub.innerHTML='This model uses logistic regression.<br>The model outputs are:';
+
   const labels=['High or Intermediate','Low'];
   const data=[Prob1*100,(1-Prob1)*100];
-  const colors = labels.map(l => (l.includes('High') ? 'rgb(230,75,53)' : 'rgb(3,160,135)'));
-  res.innerHTML = '<ul style="margin-left:20px;">' + labels.map((l,i)=>`<li><strong>${l} TdP Risk Probability:</strong> ${data[i].toFixed(1)}%</li>`).join('') + '</ul>';
+
+  if (title) title.innerText='Model 1 TdP Risk';
+  if (sub)   sub.innerHTML='This model uses logistic regression.<br>The model outputs are:';
+
+  const colors = labels.map(l => (l==='High or Intermediate') ? 'rgb(230,75,53)' : 'rgb(3,160,135)');
+
+  if (res) {
+    res.innerHTML = '<ul style="margin-left:20px;">' +
+      labels.map((l,i)=>`<li><strong>${l} TdP Risk Probability:</strong> ${data[i].toFixed(1)}%</li>`).join('') +
+      '</ul>';
+  }
+
   if(modelChart) modelChart.destroy();
   const datasets = labels.map((l,i)=>({
     label: l + ' Risk',
@@ -137,6 +145,7 @@ function updateModelPanel(){
     borderRadius: 6,
     maxBarThickness: 72
   }));
+
   modelChart = new Chart(document.getElementById('modelChart'), {
     type: 'bar',
     data: { labels: ['Predicted Risk'], datasets },
@@ -171,12 +180,7 @@ function updateModelPanel(){
       }
     }
   });
-}else{
-    title.innerText='Model 2 TdP Risk';
-    sub.innerHTML='This model uses ordinal regression.<br>The model outputs are:';
-    labels=['High','Intermediate','Low'];
-    data=[Prob2a*100,Prob2b*100,(1-Prob2a-Prob2b)*100];
-  }
+}
 
   const colors = labels.map(l => (l==='High'||l==='High or Intermediate') ? 'rgb(230,75,53)'
                             : (l==='Intermediate' ? 'rgb(254,168,9)' : 'rgb(3,160,135)'));
@@ -221,7 +225,7 @@ function updateModelPanel(){
           tooltip: { callbacks: { label: ctx => `${ctx.dataset.label}: ${ctx.parsed.y.toFixed(1)}%` } }
         }
       };
-      if(true){
+      if(/*model1*/){
         baseOpts.plugins.annotation = {
           annotations: {
             riskThreshold: {
