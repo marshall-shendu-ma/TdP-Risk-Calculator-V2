@@ -91,16 +91,17 @@ input[type=number], input[type=text], select {
 #dataBody tr { border-bottom: 6px solid transparent; }
 
 
-/* V3.69: larger input controls for readability */
+
+/* V3.70: Revert input control sizing to pre-V3.69 */
 input[type="number"], input[type="text"], select, textarea {
-  font-size: 18px !important;
-  padding: 10px 12px !important;
-  height: 44px;
-  border-radius: 8px;
+  font-size: 14px !important;
+  padding: 6px 8px !important;
+  height: auto !important;
+  border-radius: 6px !important;
 }
 button {
-  font-size: 16px;
-  padding: 10px 14px;
-  border-radius: 10px;
+  font-size: 14px !important;
+  padding: 8px 10px !important;
+  border-radius: 8px !important;
 }
-label { font-size: 16px; }
+label { font-size: inherit !important; }
