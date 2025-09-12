@@ -62,11 +62,15 @@ document.addEventListener('DOMContentLoaded', function() {
         const minConc = Math.min(...concs);
         const maxConc = Math.max(...concs);
         if (Cmax < minConc || Cmax > maxConc) {
-          alert("Cmax is outside of the concentration range in your input.\nTdP Risk cannot be calculated.");
+          alert('STOP
+[Cmax Interpolation]
+Please enter Concentration – Repolarization values with a range that covers the Cmax.');
           return;
         }
       }
-      if(concs.length<3){alert('Enter ≥3 points');return;}
+      if(concs.length<4){alert('STOP
+[Cmax Interpolation]
+Please enter at least 4 pairs of Concentration – Repolarization values for the Hill\'s Fit to converge.');return;}
       p4=Math.max(...fpdcs);
       // Determine trend and set Top/Bottom to allow negative or positive Hill fit
       const minY = Math.min(...fpdcs), maxY = Math.max(...fpdcs);
@@ -159,10 +163,14 @@ function updateModelPanel(){
 function validatePredictorRanges(){
   const p4 = parseFloat(document.getElementById('predictor4').value);
   if(!isNaN(p4) && (p4 < -372 || p4 > 1280)){
-    alert('WARNING You have entered a value outside of the input range, the program output will not be a compliant result of the logistic regression model.');
+    alert('WARNING
+[Predictor Inputs]
+Predictor Inputs are outside the range for the prediction model to yield risk probability within acceptable confidence interval. Please enter Predictor Inputs within the designated ranges.');
   }
   const p7 = parseFloat(document.getElementById('predictor7').value);
   if(!isNaN(p7) && (p7 < -100 || p7 > 303)){
-    alert('WARNING You have entered a value outside of the input range, the program output will not be a compliant result of the logistic regression model.');
+    alert('WARNING
+[Predictor Inputs]
+Predictor Inputs are outside the range for the prediction model to yield risk probability within acceptable confidence interval. Please enter Predictor Inputs within the designated ranges.');
   }
 }

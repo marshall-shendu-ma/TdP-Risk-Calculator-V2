@@ -30,7 +30,7 @@ You can directly run the program in this package by visiting [the live TRAC Calc
 ## Authors
 
 **Developer:** Marshall Ma (marshma@bu.edu, shendu.ma@fda.hhs.gov)  
-**Advisor:** Tromondae Feaster (tromondae.feaster@fda.hhs.gov)
+**Advisor(s):** TK Feaster (tromondae.feaster@fda.hhs.gov), Ksenia Blinova (ksenia.blinova@hhs.fda.gov)
 
 ---
 

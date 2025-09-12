@@ -104,3 +104,7 @@ button {
 /* V3.77: tighten Program Outputs subtitle spacing */
 #modelSubtitle { margin: 0 0 8px 0; }
 
+
+
+/* V3.80: clear spacing between the three rows under Cmax Interpolation */
+#riskForm > div { margin-bottom: 12px; }
