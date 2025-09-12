@@ -48,8 +48,8 @@ document.addEventListener('DOMContentLoaded', function() {
       arr=parseInt(document.getElementById('predictor1').value);
       p4=parseFloat(document.getElementById('predictor4').value);
       p7=parseFloat(document.getElementById('predictor7').value);
-      if(isNaN(arr)||isNaN(p4)||isNaN(p7)){alert('Fill predictors');return;}validatePredictorRanges();const c=document.getElementById('cmax'); if(c) c.value='';document.querySelectorAll('#dataBody input').forEach(el=>el.value='');
-      if(p4===0&&p7===0){alert('No drug-induced repolarization changes based on your Predictor Inputs. TdP risk cannot be justified.');}
+      if(isNaN(arr)||isNaN(p4)||isNaN(p7)){return;}validatePredictorRanges();const c=document.getElementById('cmax'); if(c) c.value='';document.querySelectorAll('#dataBody input').forEach(el=>el.value='');
+      if(p4===0&&p7===0){}
     } else {
       Cmax=parseFloat(document.getElementById('cmax').value);
       if(cmaxIsNM)Cmax/=1000;
@@ -62,15 +62,11 @@ document.addEventListener('DOMContentLoaded', function() {
         const minConc = Math.min(...concs);
         const maxConc = Math.max(...concs);
         if (Cmax < minConc || Cmax > maxConc) {
-          alert('STOP
-[Cmax Interpolation]
-Please enter Concentration – Repolarization values with a range that covers the Cmax.');
+          alert('STOP\n[Cmax Interpolation]\nPlease enter Concentration – Repolarization values with a range that covers the Cmax.');
           return;
         }
       }
-      if(concs.length<4){alert('STOP
-[Cmax Interpolation]
-Please enter at least 4 pairs of Concentration – Repolarization values for the Hill\'s Fit to converge.');return;}
+      if(concs.length<4){alert('STOP\n[Cmax Interpolation]\nPlease enter at least 4 pairs of Concentration – Repolarization values for the Hill\'s Fit to converge.');return;}
       p4=Math.max(...fpdcs);
       // Determine trend and set Top/Bottom to allow negative or positive Hill fit
       const minY = Math.min(...fpdcs), maxY = Math.max(...fpdcs);
@@ -99,7 +95,7 @@ Please enter at least 4 pairs of Concentration – Repolarization values for the
       }
 
       const FPDc = hillf(Cmax||Math.min(...concs), best);p7=FPDc;document.getElementById('predictor1').value=String(arr);document.getElementById('predictor4').value=isFinite(p4)?Number(p4).toFixed(4):'';document.getElementById('predictor7').value=isFinite(p7)?Number(p7).toFixed(4):'';validatePredictorRanges();
-      if(p4===0&&p7===0){alert('No drug-induced repolarization changes based on your Predictor Inputs. TdP risk cannot be justified.');}
+      if(p4===0&&p7===0){}
       const Thr=assay==='30'?Bottom*1.103:Bottom*1.0794;
       const logM=assay==='30'?(Thr+0.35)/0.92:(Thr+0.17)/0.93;
       (()=>{const el=document.getElementById('estimatedQTc'); if(el){ el.innerHTML=`<strong>QTc (log M):</strong> ${logM.toFixed(4)}<br><strong>Conc >10ms QT:</strong> ${Math.pow(10,logM).toFixed(4)} µM`; }})();
@@ -112,7 +108,7 @@ Please enter at least 4 pairs of Concentration – Repolarization values for the
 const map1=[0,0.6583,1.7944];
 const logit1=-0.1311+map1[arr]+0.00687*p4+0.0232*p7;
 Prob1=1/(1+Math.exp(-logit1));
-if(Prob1<0){alert('Model 1 returned a negative risk probability result and is not applicable for your Predictor Inputs.');}
+if(Prob1<0){}
 updateModelPanel();
 }
 
@@ -163,14 +159,10 @@ function updateModelPanel(){
 function validatePredictorRanges(){
   const p4 = parseFloat(document.getElementById('predictor4').value);
   if(!isNaN(p4) && (p4 < -372 || p4 > 1280)){
-    alert('WARNING
-[Predictor Inputs]
-Predictor Inputs are outside the range for the prediction model to yield risk probability within acceptable confidence interval. Please enter Predictor Inputs within the designated ranges.');
+    alert('WARNING\n[Predictor Inputs]\nPredictor Inputs are outside the range for the prediction model to yield risk probability within acceptable confidence interval. Please enter Predictor Inputs within the designated ranges.');
   }
   const p7 = parseFloat(document.getElementById('predictor7').value);
   if(!isNaN(p7) && (p7 < -100 || p7 > 303)){
-    alert('WARNING
-[Predictor Inputs]
-Predictor Inputs are outside the range for the prediction model to yield risk probability within acceptable confidence interval. Please enter Predictor Inputs within the designated ranges.');
+    alert('WARNING\n[Predictor Inputs]\nPredictor Inputs are outside the range for the prediction model to yield risk probability within acceptable confidence interval. Please enter Predictor Inputs within the designated ranges.');
   }
 }

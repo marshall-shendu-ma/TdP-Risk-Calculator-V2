@@ -105,6 +105,8 @@ button {
 #modelSubtitle { margin: 0 0 8px 0; }
 
 
+/* V3.80: spacing between Cmax, Arrhythmia, Concentration inputs */
+#riskForm>div{margin-bottom:12px;}
 
-/* V3.80: clear spacing between the three rows under Cmax Interpolation */
+/* V3.80: clear spacing between the three Cmax Interpolation rows */
 #riskForm > div { margin-bottom: 12px; }

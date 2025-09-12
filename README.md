@@ -26,11 +26,11 @@ You can directly run the program in this package by visiting [the live TRAC Calc
 - **Context of Use (COU)** and **Limitations** documented with links to key references.
 
 ---
-
 ## Authors
 
+**Advisor(s):** TK Feaster (tromondae.feaster@hhs.fda.gov), Ksenia Blinova (ksenia.blinova@hhs.fda.gov)
 **Developer:** Marshall Ma (marshma@bu.edu, shendu.ma@fda.hhs.gov)  
-**Advisor(s):** TK Feaster (tromondae.feaster@fda.hhs.gov), Ksenia Blinova (ksenia.blinova@hhs.fda.gov)
+**Advisor(s):** TK Feaster (tromondae.feaster@hhs.fda.gov), Ksenia Blinova (ksenia.blinova@hhs.fda.gov)
 
 ---
 
