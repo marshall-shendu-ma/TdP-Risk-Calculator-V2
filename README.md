@@ -29,8 +29,8 @@ You can directly run the program in this package by visiting [the live TRAC Calc
 
 ## Authors
 
-Developer: Marshall Ma (marshma@bu.edu, shendu.ma@hhs.fda.gov)
-Advisor(s): TK Feaster (tromondae.feaster@hhs.fda.gov), Ksenia Blinova (ksenia.blinova@hhs.fda.gov)
+**Developer:** Marshall Ma (marshma@bu.edu, shendu.ma@hhs.fda.gov)  
+**Advisor(s):** TK Feaster (tromondae.feaster@hhs.fda.gov), Ksenia Blinova (ksenia.blinova@hhs.fda.gov)
 
 ## Getting Started
 
